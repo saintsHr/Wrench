@@ -1,1 +1,1 @@
-rm -rf ./build
+sudo rm -rf ./build ./install-test

@@ -5,12 +5,17 @@ project(wrench VERSION 0.0.0 LANGUAGES CXX C)
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
+set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+
+# --- Dependencies ---
+
 include(CMakePackageConfigHelpers)
+find_package(glfw3 REQUIRED)
 
 # --- Engine Build ---
 
 add_library(wrench STATIC
-    src/wrench/test.cpp
+    src/wrench/core/engine.cpp
 
     third_party/src/glad/glad.c
 )
@@ -30,38 +35,28 @@ target_include_directories(wrench SYSTEM PRIVATE
     third_party/include/glad
 )
 
+target_link_libraries(wrench PRIVATE
+    glfw
+)
+
 target_compile_options(wrench PRIVATE
     $<$<CONFIG:Debug>:
-        -g3
-        -O0
-        -DWRENCH_DEBUG
-        -fno-omit-frame-pointer
-        -fno-inline
-        -fstack-protector-all
-        -Wall -Wextra -Wpedantic
-        -Wshadow
-        -Wconversion
-        -Wsign-conversion
-        -Wnon-virtual-dtor
-        -Wold-style-cast
-        -Wnull-dereference
-        -Wdouble-promotion
-        -fsanitize=address,undefined,leak
+        -g3 -O0 -DWRENCH_DEBUG
+        -fno-omit-frame-pointer -fno-inline
+        -fstack-protector-all -Wall -Wextra
+        -Wpedantic -Wshadow -Wconversion
+        -Wsign-conversion -Wnon-virtual-dtor
+        -Wold-style-cast -Wnull-dereference
+        -Wdouble-promotion -fsanitize=address,undefined,leak
         -fsanitize-address-use-after-scope
     >
     $<$<CONFIG:Release>:
-        -O3
-        -DNDEBUG
-        -g0
-        -fomit-frame-pointer
-        -flto
-        -funroll-loops
-        -fmerge-all-constants
+        -O3 -DNDEBUG -g0 -fomit-frame-pointer
+        -flto -funroll-loops -fmerge-all-constants
         -fno-stack-protector
     >
 )
-
-target_link_options(wrench PRIVATE
+target_link_options(wrench PUBLIC
     $<$<CONFIG:Debug>:-fsanitize=address,undefined,leak>
     $<$<CONFIG:Release>:-flto -s>
 )
