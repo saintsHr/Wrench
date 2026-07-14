@@ -23,15 +23,23 @@ SOFTWARE.
 */
 
 #include "wrench/core/engine.hpp"
-#include <cassert>
+#include <GLFW/glfw3.h>
 
 namespace Wrench {
 
-void Engine::init(Application* app) {
-	if (app == nullptr) return;
-	app_ = app;
+void Engine::init(Application& app) {
+	app_ = &app;
 
-	app_->onInit();
+	glfwInit();
+
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
+    glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
+    glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
+
+    window_.create();
+    window_.makeContextCurrent();
+
+    app_->onInit(*this);
 }
 
 void Engine::run() {
@@ -40,15 +48,30 @@ void Engine::run() {
 	running_ = true;
 
 	while (running_) {
-		app_->onUpdate();
-		app_->onRender();
+		window_.pollEvents();
+
+		app_->onUpdate(*this);
+		app_->onRender(*this);
+
+		window_.swapBuffers();
+
+		if (window_.shouldClose()) running_ = false;
 	}
 }
 
 void Engine::shutdown() {
 	if (app_ == nullptr) return;
+	app_->onShutdown(*this);
 
-	app_->onShutdown();
+	glfwTerminate();
+}
+
+Window& Engine::window(void) {
+	return window_;
+}
+
+const Window& Engine::window(void) const {
+	return window_;
 }
 
 }

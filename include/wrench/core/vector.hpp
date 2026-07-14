@@ -24,24 +24,16 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/core/application.hpp"
-#include "wrench/window/window.hpp"
-
 namespace Wrench {
 
-class Engine {
+class Vec2 {
 public:
-	void init(Application& app);
-	void run();
-	void shutdown();
+	float x, y;
+};
 
-	Window& window(void);
-	const Window& window(void) const;
-private:
-	bool running_ = false;
-	Application* app_ = nullptr;
-
-	Window window_;
+class Vec3 {
+public:
+	float x, y, z;
 };
 
 }

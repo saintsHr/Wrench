@@ -24,24 +24,44 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/core/application.hpp"
-#include "wrench/window/window.hpp"
+#include "wrench/core/vector.hpp"
+#include <string>
+
+struct GLFWwindow;
 
 namespace Wrench {
 
-class Engine {
+inline const Vec2 DEFAULT_WINDOW_SIZE = {800, 600};
+inline const std::string DEFAULT_WINDOW_TITLE = "Untitled Window";
+
+class Window {
 public:
-	void init(Application& app);
-	void run();
-	void shutdown();
+	Window(const Window&) = delete;
+	Window& operator=(const Window&) = delete;
 
-	Window& window(void);
-	const Window& window(void) const;
+	Window() = default;
+	~Window();
+
+	void create(void);
+
+	void setTitle(const std::string& title);
+	void setSize(Vec2 size);
+
+	const std::string& getTitle(void) const;
+	Vec2 getSize(void) const;
+
+	bool shouldClose(void) const;
+
+	void pollEvents(void);
+	void swapBuffers(void);
+
+	void makeContextCurrent(void);
+
+	GLFWwindow* nativeHandle(void) const;
 private:
-	bool running_ = false;
-	Application* app_ = nullptr;
-
-	Window window_;
+	GLFWwindow* raw_ = nullptr;
+	std::string title_ = "Untitled Window";
+	Vec2 size_ = {0, 0};
 };
 
 }

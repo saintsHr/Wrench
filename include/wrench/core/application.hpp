@@ -26,14 +26,16 @@ SOFTWARE.
 
 namespace Wrench {
 
+class Engine;
+
 class Application {
 public:
-	virtual ~Application() = default;
+    virtual ~Application() = default;
 
-    virtual void onInit() {}
-    virtual void onUpdate() {}
-    virtual void onRender() {}
-    virtual void onShutdown() {}
+    virtual void onInit(Engine& engine) {static_cast<void>(engine);}
+    virtual void onUpdate(Engine& engine) {static_cast<void>(engine);}
+    virtual void onRender(Engine& engine) {static_cast<void>(engine);}
+    virtual void onShutdown(Engine& engine) {static_cast<void>(engine);}
 };
 
 }
