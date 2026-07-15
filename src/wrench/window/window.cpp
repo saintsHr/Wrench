@@ -50,6 +50,7 @@ GLFWwindow* Window::nativeHandle(void) const {
 	return raw_;
 }
 
+__attribute__((hot))
 bool Window::shouldClose(void) const {
 	if (raw_ != nullptr) {
 		return glfwWindowShouldClose(raw_);
@@ -58,10 +59,12 @@ bool Window::shouldClose(void) const {
 	return false;
 }
 
+__attribute__((hot))
 void Window::pollEvents(void) {
 	glfwPollEvents();
 }
 
+__attribute__((hot))
 void Window::swapBuffers(void) {
 	if (raw_ != nullptr) glfwSwapBuffers(raw_);
 }

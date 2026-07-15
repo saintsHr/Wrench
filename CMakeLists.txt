@@ -7,7 +7,18 @@ set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
 
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
+set(GLFW_INCLUDE_NONE ON)
+
 # --- Dependencies ---
+
+find_program(CCACHE_PROGRAM ccache)
+
+if(CCACHE_PROGRAM)
+    message(STATUS "Compile Cache Enabled (${CCACHE_PROGRAM})")
+
+    set(CMAKE_C_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+    set(CMAKE_CXX_COMPILER_LAUNCHER "${CCACHE_PROGRAM}")
+endif()
 
 include(CMakePackageConfigHelpers)
 find_package(glfw3 REQUIRED)
@@ -17,12 +28,13 @@ find_package(glfw3 REQUIRED)
 add_library(wrench STATIC
     src/wrench/core/engine.cpp
     src/wrench/window/window.cpp
+    src/wrench/renderer/renderer.cpp
 
-    third_party/src/glad/glad.c
+    third_party/src/glad.c
 )
 
 set_source_files_properties(
-    third_party/src/glad/glad.c
+    third_party/src/glad.c
 
     PROPERTIES COMPILE_OPTIONS "-w"
 )
@@ -33,7 +45,7 @@ target_include_directories(wrench PUBLIC
 )
 
 target_include_directories(wrench SYSTEM PRIVATE
-    third_party/include/glad
+    third_party/include
 )
 
 target_link_libraries(wrench PRIVATE
@@ -42,19 +54,23 @@ target_link_libraries(wrench PRIVATE
 
 target_compile_options(wrench PRIVATE
     $<$<CONFIG:Debug>:
-        -g3 -O0 -DWRENCH_DEBUG
+        -g3 -O0 -DWRENCH_DEBUG -Werror
         -fno-omit-frame-pointer -fno-inline
         -fstack-protector-all -Wall -Wextra
         -Wpedantic -Wshadow -Wconversion
-        -Wsign-conversion -Wnon-virtual-dtor
-        -Wold-style-cast -Wnull-dereference
+        -Wsign-conversion -Wnull-dereference
         -Wdouble-promotion -fsanitize=address,undefined,leak
         -fsanitize-address-use-after-scope
+
+        $<$<COMPILE_LANGUAGE:CXX>:
+            -Wnon-virtual-dtor
+            -Wold-style-cast
+        >
     >
     $<$<CONFIG:Release>:
         -O3 -DNDEBUG -g0 -fomit-frame-pointer
         -flto -funroll-loops -fmerge-all-constants
-        -fno-stack-protector
+        -fno-stack-protector -DWRENCH_RELEASE
     >
 )
 target_link_options(wrench PUBLIC

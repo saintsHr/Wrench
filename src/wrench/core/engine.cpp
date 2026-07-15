@@ -27,8 +27,10 @@ SOFTWARE.
 
 namespace Wrench {
 
+__attribute__((cold))
 void Engine::init(Application& app) {
 	app_ = &app;
+	app.engine_ = this;
 
 	glfwInit();
 
@@ -39,9 +41,12 @@ void Engine::init(Application& app) {
     window_.create();
     window_.makeContextCurrent();
 
-    app_->onInit(*this);
+    renderer_.init(window_);
+
+    app_->onInit();
 }
 
+__attribute__((hot))
 void Engine::run() {
 	if (app_ == nullptr) return;
 
@@ -50,8 +55,11 @@ void Engine::run() {
 	while (running_) {
 		window_.pollEvents();
 
-		app_->onUpdate(*this);
-		app_->onRender(*this);
+		app_->onUpdate();
+
+		renderer_.beginFrame();
+		app_->onRender();
+		renderer_.endFrame();
 
 		window_.swapBuffers();
 
@@ -59,9 +67,10 @@ void Engine::run() {
 	}
 }
 
+__attribute__((cold))
 void Engine::shutdown() {
 	if (app_ == nullptr) return;
-	app_->onShutdown(*this);
+	app_->onShutdown();
 
 	glfwTerminate();
 }

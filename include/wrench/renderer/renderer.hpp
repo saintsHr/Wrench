@@ -24,6 +24,16 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/core/engine.hpp"
-#include "wrench/core/application.hpp"
-#include "wrench/renderer/renderer.hpp"
+#include "wrench/window/window.hpp"
+
+namespace Wrench {
+
+class Renderer {
+public:
+	void init(Window& window);
+
+	void beginFrame(void);
+	void endFrame(void);
+};
+
+}

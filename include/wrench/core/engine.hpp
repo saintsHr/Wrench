@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "wrench/core/application.hpp"
+#include "wrench/renderer/renderer.hpp"
 #include "wrench/window/window.hpp"
 
 namespace Wrench {
@@ -37,11 +38,15 @@ public:
 
 	Window& window(void);
 	const Window& window(void) const;
+
+	Renderer& renderer(void);
+	const Renderer& renderer(void) const;
 private:
 	bool running_ = false;
 	Application* app_ = nullptr;
 
 	Window window_;
+	Renderer renderer_;
 };
 
 }

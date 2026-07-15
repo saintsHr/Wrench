@@ -29,13 +29,24 @@ namespace Wrench {
 class Engine;
 
 class Application {
+
+friend class Engine;
+
 public:
     virtual ~Application() = default;
 
-    virtual void onInit(Engine& engine) {static_cast<void>(engine);}
-    virtual void onUpdate(Engine& engine) {static_cast<void>(engine);}
-    virtual void onRender(Engine& engine) {static_cast<void>(engine);}
-    virtual void onShutdown(Engine& engine) {static_cast<void>(engine);}
+    virtual void onInit() {}
+    virtual void onUpdate() {}
+    virtual void onRender() {}
+    virtual void onShutdown() {}
+
+protected:
+    Engine& engine() {return *engine_;}
+    const Engine& engine() const {return *engine_;}
+
+private:
+    Engine* engine_ = nullptr;
+
 };
 
 }

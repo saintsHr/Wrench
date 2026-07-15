@@ -22,8 +22,44 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
-#include "wrench/core/engine.hpp"
-#include "wrench/core/application.hpp"
 #include "wrench/renderer/renderer.hpp"
+#include "glad.h"
+#include "wrench/window/window.hpp"
+#include <GL/gl.h>
+#include <GLFW/glfw3.h>
+#include <sys/cdefs.h>
+
+__attribute__((cold))
+static void framebuffer_size_callback(__attribute__((unused)) GLFWwindow* window, int width, int height) {
+    glViewport(0, 0, width, height);
+}
+
+namespace Wrench {
+
+__attribute__((cold))
+void Renderer::init(Window& window) {
+	gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
+	glfwSetFramebufferSizeCallback(window.nativeHandle(), framebuffer_size_callback);
+	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+	glViewport(
+		0, 0,
+		static_cast<int>(window.getSize().x),
+		static_cast<int>(window.getSize().y)
+	);
+}
+
+__attribute__((hot))
+void Renderer::beginFrame(void) {
+	glClear(
+		GL_COLOR_BUFFER_BIT |
+		GL_DEPTH_BUFFER_BIT |
+		GL_STENCIL_BUFFER_BIT
+	);
+}
+
+__attribute__((hot))
+void Renderer::endFrame(void) {
+
+}
+
+}
