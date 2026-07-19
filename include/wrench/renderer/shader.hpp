@@ -24,7 +24,9 @@ SOFTWARE.
 
 #pragma once
 
+#include "wrench/core/vector.hpp"
 #include <string>
+#include <unordered_map>
 
 namespace Wrench {
 
@@ -39,7 +41,16 @@ public:
 	Shader& operator=(Shader&& other) noexcept;
 
 	void use(void);
+
+	void setUniformVec2(const std::string& name, const Vec2& value) const;
+	void setUniformVec3(const std::string& name, const Vec3& value) const;
+	void setUniformMat4(const std::string& name, const Mat4& value) const;
+	void setUniformFloat(const std::string& name, float value) const;
+	void setUniformInt(const std::string& name, int value) const;
 private:
+	int get_uniform_location_(const std::string& name) const;
+
+	mutable std::unordered_map<std::string, int> cache_;
 	unsigned int program_ = 0;
 };
 

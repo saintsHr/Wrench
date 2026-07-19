@@ -31,8 +31,8 @@ struct GLFWwindow;
 
 namespace Wrench {
 
-inline const Vec2 DEFAULT_WINDOW_SIZE = {800, 600};
-inline const std::string DEFAULT_WINDOW_TITLE = "Untitled Window";
+inline const Vec2 DEFAULT_WINDOW_SIZE(800, 600);
+inline const std::string DEFAULT_WINDOW_TITLE("Untitled Window");
 
 class Window {
 public:

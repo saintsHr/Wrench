@@ -145,4 +145,39 @@ void Shader::use(void) {
 	glUseProgram(this->program_);
 }
 
+void Shader::setUniformVec2(const std::string& name, const Vec2& value) const {
+	int loc = get_uniform_location_(name);
+	glProgramUniform2f(program_, loc, value.x, value.y);
+}
+
+void Shader::setUniformVec3(const std::string& name, const Vec3& value) const {
+	int loc = get_uniform_location_(name);
+	glProgramUniform3f(program_, loc, value.x, value.y, value.z);
+}
+
+void Shader::setUniformMat4(const std::string& name, const Mat4& value) const {
+	int loc = get_uniform_location_(name);
+	glProgramUniformMatrix4fv(program_, loc, 1, GL_FALSE, value.data());
+}
+
+void Shader::setUniformFloat(const std::string& name, float value) const {
+	int loc = get_uniform_location_(name);
+	glProgramUniform1f(program_, loc, value);
+}
+
+void Shader::setUniformInt(const std::string& name, int value) const {
+	int loc = get_uniform_location_(name);
+	glProgramUniform1i(program_, loc, value);
+}
+
+int Shader::get_uniform_location_(const std::string& name) const {
+	auto it = cache_.find(name);
+	if (it != cache_.end()) return it->second;
+
+	int location = glGetUniformLocation(this->program_, name.c_str());
+	cache_[name] = location;
+
+	return location;
+}
+
 }
