@@ -29,14 +29,12 @@ SOFTWARE.
 #include <GLFW/glfw3.h>
 #include <sys/cdefs.h>
 
-__attribute__((cold))
 static void framebuffer_size_callback(__attribute__((unused)) GLFWwindow* window, int width, int height) {
     glViewport(0, 0, width, height);
 }
 
 namespace Wrench {
 
-__attribute__((cold))
 void Renderer::init(Window& window) {
 	gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 	glfwSetFramebufferSizeCallback(window.nativeHandle(), framebuffer_size_callback);
@@ -48,7 +46,6 @@ void Renderer::init(Window& window) {
 	);
 }
 
-__attribute__((hot))
 void Renderer::beginFrame(void) {
 	glClear(
 		GL_COLOR_BUFFER_BIT |
@@ -57,7 +54,6 @@ void Renderer::beginFrame(void) {
 	);
 }
 
-__attribute__((hot))
 void Renderer::endFrame(void) {
 
 }

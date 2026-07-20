@@ -27,8 +27,12 @@ find_package(glfw3 REQUIRED)
 
 add_library(wrench STATIC
     src/wrench/core/engine.cpp
+
     src/wrench/window/window.cpp
+
     src/wrench/renderer/renderer.cpp
+    src/wrench/renderer/shader.cpp
+    src/wrench/renderer/mesh.cpp
 
     third_party/src/glad.c
 )

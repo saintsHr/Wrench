@@ -28,10 +28,7 @@ SOFTWARE.
 namespace Wrench {
 
 Window::~Window() {
-	if (raw_ != nullptr) {
-		glfwDestroyWindow(raw_);
-	}
-
+	if (raw_ != nullptr) glfwDestroyWindow(raw_);
 	raw_ = nullptr;
 }
 
@@ -43,6 +40,7 @@ void Window::create(void) {
 		NULL, NULL
 	);
 
+	size_ = DEFAULT_WINDOW_SIZE;
 	if (window != nullptr) raw_ = window;
 }
 
@@ -50,7 +48,6 @@ GLFWwindow* Window::nativeHandle(void) const {
 	return raw_;
 }
 
-__attribute__((hot))
 bool Window::shouldClose(void) const {
 	if (raw_ != nullptr) {
 		return glfwWindowShouldClose(raw_);
@@ -59,12 +56,10 @@ bool Window::shouldClose(void) const {
 	return false;
 }
 
-__attribute__((hot))
 void Window::pollEvents(void) {
 	glfwPollEvents();
 }
 
-__attribute__((hot))
 void Window::swapBuffers(void) {
 	if (raw_ != nullptr) glfwSwapBuffers(raw_);
 }

@@ -23,11 +23,12 @@ SOFTWARE.
 */
 
 #include "wrench/core/engine.hpp"
+#include <glad.h>
 #include <GLFW/glfw3.h>
+#include <iostream>
 
 namespace Wrench {
 
-__attribute__((cold))
 void Engine::init(Application& app) {
 	app_ = &app;
 	app.engine_ = this;
@@ -46,7 +47,6 @@ void Engine::init(Application& app) {
     app_->onInit();
 }
 
-__attribute__((hot))
 void Engine::run() {
 	if (app_ == nullptr) return;
 
@@ -67,7 +67,6 @@ void Engine::run() {
 	}
 }
 
-__attribute__((cold))
 void Engine::shutdown() {
 	if (app_ == nullptr) return;
 	app_->onShutdown();

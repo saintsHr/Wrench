@@ -26,4 +26,9 @@ SOFTWARE.
 
 #include "wrench/core/engine.hpp"
 #include "wrench/core/application.hpp"
+
+#include "wrench/window/window.hpp"
+
 #include "wrench/renderer/renderer.hpp"
+#include "wrench/renderer/shader.hpp"
+#include "wrench/renderer/mesh.hpp"

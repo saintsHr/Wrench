@@ -77,8 +77,17 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success_fragment);
 
 	if(success_vertex == false) {
-	    glGetShaderInfoLog(vertexShader, log_vertex.size(), NULL, log_vertex.data());
-	    std::cout << "Vertex shader failed to compile:\n" << log_vertex << std::endl;
+	    glGetShaderInfoLog(
+	    	vertexShader,
+	    	static_cast<GLsizei>(log_vertex.size()),
+	    	NULL,
+	    	log_vertex.data()
+	    );
+
+	    std::cout
+	    	<< "Vertex shader failed to compile:\n"
+	    	<< log_vertex
+	    	<< std::endl;
 
 	    glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
@@ -88,8 +97,17 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	}
 
 	if(success_fragment == false) {
-	    glGetShaderInfoLog(fragmentShader, log_fragment.size(), NULL, log_fragment.data());
-	    std::cout << "Fragment shader failed to compile:\n" << log_fragment << std::endl;
+	    glGetShaderInfoLog(
+	    	fragmentShader,
+	    	static_cast<GLsizei>(log_fragment.size()),
+	    	NULL,
+	    	log_fragment.data()
+	    );
+
+	    std::cout
+	    	<< "Fragment shader failed to compile:\n"
+	    	<< log_fragment
+	    	<< std::endl;
 
 	    glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
@@ -106,8 +124,17 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success_link);
 
 	if(success_link == false) {
-	    glGetProgramInfoLog(shaderProgram, log_link.size(), NULL, log_link.data());
-	    std::cout << "Shader failed to link:\n" << log_link << std::endl;
+	    glGetProgramInfoLog(
+	    	shaderProgram,
+	    	static_cast<GLsizei>(log_link.size()),
+	    	NULL,
+	    	log_link.data()
+	    );
+
+	    std::cout
+	    	<< "Shader failed to link:\n"
+	    	<< log_link
+	    	<< std::endl;
 
 	    glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
