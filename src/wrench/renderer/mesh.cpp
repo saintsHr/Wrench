@@ -69,41 +69,30 @@ void Mesh::upload(
 	glNamedBufferData(
 		vbo_,
 		static_cast<GLsizeiptr>(vertices.size() * sizeof(Vertex)),
-		vertices.data(),
-		GL_STATIC_DRAW
+		vertices.data(), GL_STATIC_DRAW
 	);
 
 	// fills EBO with indices
 	glNamedBufferData(
 		ebo_,
 		indexCount_ * sizeof(unsigned int),
-		indices.data(),
-		GL_STATIC_DRAW
+		indices.data(), GL_STATIC_DRAW
 	);
 
 	// binds VBO to VAO
 	glVertexArrayVertexBuffer(
-		vao_,
-		0,
-		vbo_,
-		0,
+		vao_, 0, vbo_, 0,
 		sizeof(Vertex)
 	);
 
 	// binds EBO to VAO
-	glVertexArrayElementBuffer(
-		vao_,
-		ebo_
-	);
+	glVertexArrayElementBuffer(vao_, ebo_);
 
 	// configs position attribute in VAO
 	glEnableVertexArrayAttrib(vao_, 0);
 	glVertexArrayAttribFormat(
-		vao_,
-		0,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
+		vao_, 0, 3,
+		GL_FLOAT, GL_FALSE,
 		offsetof(Vertex, position)
 	);
 	glVertexArrayAttribBinding(vao_, 0, 0);
@@ -111,11 +100,8 @@ void Mesh::upload(
 	// configs normal attribute in VAO
 	glEnableVertexArrayAttrib(vao_, 1);
 	glVertexArrayAttribFormat(
-		vao_,
-		1,
-		3,
-		GL_FLOAT,
-		GL_FALSE,
+		vao_, 1, 3,
+		GL_FLOAT, GL_FALSE,
 		offsetof(Vertex, normal)
 	);
 	glVertexArrayAttribBinding(vao_, 1, 0);
@@ -123,11 +109,8 @@ void Mesh::upload(
 	// configs UV attribute in VAO
 	glEnableVertexArrayAttrib(vao_, 2);
 	glVertexArrayAttribFormat(
-		vao_,
-		2,
-		2,
-		GL_FLOAT,
-		GL_FALSE,
+		vao_, 2, 2,
+		GL_FLOAT, GL_FALSE,
 		offsetof(Vertex, uv)
 	);
 	glVertexArrayAttribBinding(vao_, 2, 0);

@@ -29,7 +29,10 @@ SOFTWARE.
 #include <GLFW/glfw3.h>
 #include <sys/cdefs.h>
 
-static void framebuffer_size_callback(__attribute__((unused)) GLFWwindow* window, int width, int height) {
+static void framebuffer_size_callback(
+	__attribute__((unused)) GLFWwindow* window,
+	int width, int height
+) {
     glViewport(0, 0, width, height);
 }
 
@@ -38,12 +41,18 @@ namespace Wrench {
 void Renderer::init(Window& window) {
 	gladLoadGLLoader(reinterpret_cast<GLADloadproc>(glfwGetProcAddress));
 	glfwSetFramebufferSizeCallback(window.nativeHandle(), framebuffer_size_callback);
+	
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
+
 	glViewport(
 		0, 0,
 		static_cast<int>(window.getSize().x),
 		static_cast<int>(window.getSize().y)
 	);
+
+	glCullFace(GL_BACK);
+	glFrontFace(GL_CCW);
+	glEnable(GL_CULL_FACE);
 }
 
 void Renderer::beginFrame(void) {
