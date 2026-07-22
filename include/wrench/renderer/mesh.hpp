@@ -1,6 +1,6 @@
 #pragma once
 
-#include "wrench/core/vector.hpp"
+#include "wrench/utils/vector.hpp"
 #include <vector>
 
 namespace Wrench {

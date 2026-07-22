@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/internal/math.hpp"
+#include "wrench/utils/math.hpp"
 #include "wrench/utils/math.hpp"
 #include <cmath>
 

@@ -32,3 +32,6 @@ SOFTWARE.
 #include "wrench/renderer/renderer.hpp"
 #include "wrench/renderer/shader.hpp"
 #include "wrench/renderer/mesh.hpp"
+
+#include "wrench/utils/math.hpp"
+#include "wrench/utils/vector.hpp"
