@@ -24,17 +24,155 @@ SOFTWARE.
 
 #pragma once
 
+#include "wrench/internal/math.hpp"
+#include "wrench/utils/math.hpp"
+#include <cmath>
+
 namespace Wrench {
 
 class Vec2 {
 public:
 	Vec2(float x_ = 0.0f, float y_ = 0.0f) : x(x_), y(y_) {};
+
+	float length() const {
+		return std::sqrt(
+			(x * x) +
+			(y * y)
+		);
+	}
+
+	Vec2 operator+(const Vec2& other) const {
+		Vec2 result;
+
+		result.x = x + other.x;
+		result.y = y + other.y;
+
+		return result;
+	}
+
+	Vec2 operator-(const Vec2& other) const {
+		Vec2 result;
+
+		result.x = x - other.x;
+		result.y = y - other.y;
+
+		return result;
+	}
+
+	Vec2 operator*(const Vec2& other) const {
+		Vec2 result;
+
+		result.x = x * other.x;
+		result.y = y * other.y;
+
+		return result;
+	}
+
+	Vec2 operator/(const Vec2& other) const {
+		Vec2 result;
+
+		result.x = x / other.x;
+		result.y = y / other.y;
+
+		return result;
+	}
+
+	Vec2 normalize() const {
+		Vec2 result;
+		
+		float len = length();
+
+		result.x = x / len;
+		result.y = y / len;
+
+		return result;
+	}
+
+	static float dot(const Vec2& a, const Vec2& b) {
+		return (a.x * b.x) + (a.y * b.y);
+	}
+
 	float x, y;
 };
 
 class Vec3 {
 public:
 	Vec3(float x_ = 0.0f, float y_ = 0.0f, float z_ = 0.0f) : x(x_), y(y_), z(z_) {};
+	
+	Vec3 operator+(const Vec3& other) const {
+		Vec3 result;
+
+		result.x = x + other.x;
+		result.y = y + other.y;
+		result.z = z + other.z;
+
+		return result;
+	}
+
+	Vec3 operator-(const Vec3& other) const {
+		Vec3 result;
+
+		result.x = x - other.x;
+		result.y = y - other.y;
+		result.z = z - other.z;
+
+		return result;
+	}
+
+	Vec3 operator*(const Vec3& other) const {
+		Vec3 result;
+
+		result.x = x * other.x;
+		result.y = y * other.y;
+		result.z = z * other.z;
+
+		return result;
+	}
+
+	Vec3 operator/(const Vec3& other) const {
+		Vec3 result;
+
+		result.x = x / other.x;
+		result.y = y / other.y;
+		result.z = z / other.z;
+
+		return result;
+	}
+
+	float length() const {
+		return std::sqrt(
+			(x * x) +
+			(y * y) +
+			(z * z)
+		);
+	}
+
+	Vec3 normalize() const {
+		Vec3 result;
+
+		float len = length();
+
+		result.x = x / len;
+		result.y = y / len;
+		result.z = z / len;
+
+		return result;
+	}
+
+	static Vec3 cross(const Vec3& a, const Vec3& b) {
+		Vec3 result;
+
+		result.x = (a.y * b.z) - (a.z * b.y);
+		result.y = (a.z * b.x) - (a.x * b.z);
+		result.z = (a.x * b.y) - (a.y * b.x);
+
+		return result;
+	}
+
+	static float dot(const Vec3& a, const Vec3& b) {
+		return (a.x * b.x) + (a.y * b.y) + (a.z * b.z);
+	}
+
 	float x, y, z;
 };
 
@@ -54,6 +192,138 @@ public:
 
 	const float& operator()(int col, int row) const {
 		return m_[col][row];
+	}
+
+	Mat4 operator*(const Mat4& other) const {
+		Mat4 result;
+
+		for (int row = 0; row < 4; row++) {
+			for (int col = 0; col < 4; col++) {
+				float cell = 0;
+
+				for (int k = 0; k < 4; k++) {
+					cell += this->operator()(k, row) * other(col, k);
+				}
+
+				result(col, row) = cell;
+			}
+		}
+
+		return result;
+	}
+
+	static Mat4 identity() {
+		Mat4 result;
+
+		for (int row = 0; row < 4; row++) {
+			for (int col = 0; col < 4; col++) {
+				row == col ? result(col, row) = 1 : result(col, row) = 0;
+			}
+		}
+
+		return result;
+	}
+
+	static Mat4 zeroed() {
+		Mat4 result;
+
+		for (int row = 0; row < 4; row++) {
+			for (int col = 0; col < 4; col++) {
+				result(col, row) = 0;
+			}
+		}
+
+		return result;
+	}
+
+	static Mat4 translate(const Vec3& offset) {
+		Mat4 result;
+
+		result(3, 0) = offset.x;
+		result(3, 1) = offset.y;
+		result(3, 2) = offset.z;
+
+		return result;
+	}
+
+	static Mat4 scale(const Vec3& size) {
+		Mat4 result;
+
+		result(0, 0) = size.x;
+		result(1, 1) = size.y;
+		result(2, 2) = size.z;
+
+		return result;
+	}
+
+	static Mat4 rotateX(float degrees) {
+		Mat4 result;
+
+		float rad = Math::degreesToRadians(degrees);
+
+		result(1, 1) = std::cos(rad);
+		result(1, 2) = -std::sin(rad);
+		result(2, 1) = std::sin(rad);
+		result(2, 2) = std::cos(rad);
+
+		return result;
+	}
+
+	static Mat4 rotateY(float degrees) {
+		Mat4 result;
+
+		float rad = Math::degreesToRadians(degrees);
+
+		result(0, 0) = std::cos(rad);
+		result(2, 0) = std::sin(rad);
+		result(0, 2) = -std::sin(rad);
+		result(2, 2) = std::cos(rad);
+
+		return result;
+	}
+
+	static Mat4 rotateZ(float degrees) {
+		Mat4 result;
+
+		float rad = Math::degreesToRadians(degrees);
+
+		result(0, 0) = std::cos(rad);
+		result(1, 0) = -std::sin(rad);
+		result(0, 1) = std::sin(rad);
+		result(1, 1) = std::cos(rad);
+
+		return result;
+	}
+
+	static Mat4 perspective(float fov, float aspect, float near, float far) {
+		Mat4 result = Mat4::zeroed();
+
+		float fov_tan_rad = std::tan(Math::degreesToRadians(fov) / 2);
+
+		result(0, 0) = 1 / (aspect * fov_tan_rad);
+		result(1, 1) = 1 / fov_tan_rad;
+		result(2, 2) = -(far + near) / (far - near);
+		result(2, 3) = -1;
+		result(3, 2) = -(2 * far * near) / (far - near);
+
+		return result;
+	}
+
+	static Mat4 lookAt(const Vec3& eye, const Vec3& target, const Vec3& up) {
+		Mat4 result;
+
+		Vec3 zAxis = (eye - target).normalize();
+		Vec3 xAxis = Vec3::cross(up, zAxis).normalize();
+		Vec3 yAxis = Vec3::cross(zAxis, xAxis);
+
+		result(0,0) = xAxis.x;  result(1,0) = xAxis.y;  result(2,0) = xAxis.z;
+		result(0,1) = yAxis.x;  result(1,1) = yAxis.y;  result(2,1) = yAxis.z;
+		result(0,2) = zAxis.x;  result(1,2) = zAxis.y;  result(2,2) = zAxis.z;
+		result(3,0) = -Vec3::dot(xAxis, eye);
+		result(3,1) = -Vec3::dot(yAxis, eye);
+		result(3,2) = -Vec3::dot(zAxis, eye);
+
+		return result;
 	}
 
 	const float* data() const {
