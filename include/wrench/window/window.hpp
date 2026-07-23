@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/utils/vec2.hpp"
+#include "wrench/utils/vector/vec2.hpp"
 
 #include <string>
 

@@ -24,8 +24,8 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/utils/vec3.hpp"
-#include "wrench/utils/math.hpp"
+#include "wrench/utils/vector/vec3.hpp"
+#include "wrench/utils/vector/math.hpp"
 #include <cmath>
 
 namespace Wrench {
