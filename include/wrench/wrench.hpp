@@ -34,4 +34,7 @@ SOFTWARE.
 #include "wrench/renderer/mesh.hpp"
 
 #include "wrench/utils/math.hpp"
-#include "wrench/utils/vector.hpp"
+#include "wrench/utils/vec2.hpp"
+#include "wrench/utils/vec3.hpp"
+#include "wrench/utils/mat4.hpp"
+#include "wrench/utils/quaternion.hpp"

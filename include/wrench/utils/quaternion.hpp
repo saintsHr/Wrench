@@ -24,37 +24,8 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/utils/vec3.hpp"
-#include "wrench/utils/vec2.hpp"
-#include "wrench/utils/mat4.hpp"
+namespace Wrench::Math {
 
-#include <string>
-#include <unordered_map>
 
-namespace Wrench {
-
-class Shader {
-public:
-	Shader(const std::string& vertex_source, const std::string& fragment_source);
-	~Shader();
-
-	Shader(const Shader&) = delete;
-	Shader& operator=(const Shader&) = delete;
-	Shader(Shader&& other) noexcept;
-	Shader& operator=(Shader&& other) noexcept;
-
-	void use(void);
-
-	void setUniformVec2(const std::string& name, const Vec2& value) const;
-	void setUniformVec3(const std::string& name, const Vec3& value) const;
-	void setUniformMat4(const std::string& name, const Mat4& value) const;
-	void setUniformFloat(const std::string& name, float value) const;
-	void setUniformInt(const std::string& name, int value) const;
-private:
-	int get_uniform_location_(const std::string& name) const;
-
-	mutable std::unordered_map<std::string, int> cache_;
-	unsigned int program_ = 0;
-};
 
 }

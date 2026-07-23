@@ -24,7 +24,8 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/utils/vector.hpp"
+#include "wrench/utils/vec2.hpp"
+
 #include <string>
 
 struct GLFWwindow;

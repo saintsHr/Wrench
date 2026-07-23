@@ -23,9 +23,9 @@ SOFTWARE.
 */
 
 #include "wrench/core/engine.hpp"
+
 #include <glad.h>
 #include <GLFW/glfw3.h>
-#include <iostream>
 
 namespace Wrench {
 

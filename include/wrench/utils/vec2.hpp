@@ -24,37 +24,73 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/utils/vec3.hpp"
-#include "wrench/utils/vec2.hpp"
-#include "wrench/utils/mat4.hpp"
-
-#include <string>
-#include <unordered_map>
+#include <cmath>
 
 namespace Wrench {
 
-class Shader {
+class Vec2 {
 public:
-	Shader(const std::string& vertex_source, const std::string& fragment_source);
-	~Shader();
+	Vec2(float x_ = 0.0f, float y_ = 0.0f) : x(x_), y(y_) {};
 
-	Shader(const Shader&) = delete;
-	Shader& operator=(const Shader&) = delete;
-	Shader(Shader&& other) noexcept;
-	Shader& operator=(Shader&& other) noexcept;
+	float length() const {
+		return std::sqrt(
+			(x * x) +
+			(y * y)
+		);
+	}
 
-	void use(void);
+	Vec2 operator+(const Vec2& other) const {
+		Vec2 result;
 
-	void setUniformVec2(const std::string& name, const Vec2& value) const;
-	void setUniformVec3(const std::string& name, const Vec3& value) const;
-	void setUniformMat4(const std::string& name, const Mat4& value) const;
-	void setUniformFloat(const std::string& name, float value) const;
-	void setUniformInt(const std::string& name, int value) const;
-private:
-	int get_uniform_location_(const std::string& name) const;
+		result.x = x + other.x;
+		result.y = y + other.y;
 
-	mutable std::unordered_map<std::string, int> cache_;
-	unsigned int program_ = 0;
+		return result;
+	}
+
+	Vec2 operator-(const Vec2& other) const {
+		Vec2 result;
+
+		result.x = x - other.x;
+		result.y = y - other.y;
+
+		return result;
+	}
+
+	Vec2 operator*(const Vec2& other) const {
+		Vec2 result;
+
+		result.x = x * other.x;
+		result.y = y * other.y;
+
+		return result;
+	}
+
+	Vec2 operator/(const Vec2& other) const {
+		Vec2 result;
+
+		result.x = x / other.x;
+		result.y = y / other.y;
+
+		return result;
+	}
+
+	Vec2 normalize() const {
+		Vec2 result;
+		
+		float len = length();
+
+		result.x = x / len;
+		result.y = y / len;
+
+		return result;
+	}
+
+	static float dot(const Vec2& a, const Vec2& b) {
+		return (a.x * b.x) + (a.y * b.y);
+	}
+
+	float x, y;
 };
 
 }
