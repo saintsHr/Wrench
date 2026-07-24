@@ -75,6 +75,32 @@ public:
 		return result;
 	}
 
+	Vec2 operator*(float scalar) const {
+	    Vec2 result;
+
+	    result.x = x * scalar;
+		result.y = y * scalar;
+
+	    return result;
+	}
+
+	Vec2 operator/(float scalar) const {
+	    Vec2 result;
+
+	    result.x = x / scalar;
+		result.y = y / scalar;
+
+	    return result;
+	}
+
+	friend Vec2 operator*(float scalar, const Vec2& v) {
+	    return v * scalar;
+	}
+
+	friend Vec2 operator/(float scalar, const Vec2& v) {
+	    return v / scalar;
+	}
+
 	Vec2 normalize() const {
 		Vec2 result;
 		

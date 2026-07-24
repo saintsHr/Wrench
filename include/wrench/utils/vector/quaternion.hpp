@@ -39,8 +39,55 @@ public:
 		float w_ = 1.0f
 	) : x(x_), y(y_), z(z_), w(w_) {};
 
-	Quaternion operator*(const Quaternion& other) const {
+	Vec3 operator*(const Vec3& v) const {
+	    Vec3 q(x, y, z);
+
+	    Vec3 t = 2.0f * q.cross(v);
+
+	    return v + w * t + q.cross(t);
+	}
+
+	static Quaternion identity() {
 		Quaternion result;
+
+		result.x = 0.0f;
+		result.y = 0.0f;
+		result.z = 0.0f;
+		result.w = 1.0f;
+
+		return result;
+	}
+
+	Quaternion normalized() const {
+		Quaternion result = identity();
+
+	    float len = lenght();
+	    if (len == 0.0f) return Quaternion::identity();
+
+	    result.x = x / len;
+	    result.y = y / len;
+	    result.z = z / len;
+	    result.w = w / len;
+
+	    return result;
+	}
+
+	void normalize() {
+	    float len = lenght();
+	    if (len == 0.0f) return;
+
+	    x /= len;
+	    y /= len;
+	    z /= len;
+	    w /= len;
+	}
+
+	float lenght() const {
+		return std::sqrt(x*x + y*y + z*z + w*w);
+	}
+
+	Quaternion operator*(const Quaternion& other) const {
+		Quaternion result = identity();
 
 		Quaternion a = *this;
 		Quaternion b = other;
@@ -54,7 +101,7 @@ public:
 	}
 
 	static Quaternion fromAxisAngle(const Vec3& axis, float degrees) {
-		Quaternion result;
+		Quaternion result = identity();
 
 		Vec3 normalizedAxis = axis.normalize();
 		float radians = Math::degreesToRadians(degrees);
@@ -66,6 +113,18 @@ public:
 		result.y = normalizedAxis.y * sinHalfRad;
 		result.z = normalizedAxis.z * sinHalfRad;
 		result.w = cosHalfRad;
+
+		return result;
+	}
+
+	Quaternion fromEuler(const Vec3& euler) {
+		Quaternion result = identity();
+
+		result = (
+    		Quaternion::fromAxisAngle(Vec3(1,0,0), euler.x) *
+    		Quaternion::fromAxisAngle(Vec3(0,1,0), euler.y) *
+			Quaternion::fromAxisAngle(Vec3(0,0,1), euler.z)
+		);
 
 		return result;
 	}
@@ -84,6 +143,48 @@ public:
 		result(2,2) = 1 - 2*(x*x + y*y);
 
 		return result;
+	}
+
+	static Quaternion lookRotation(const Vec3& forward, const Vec3& up)	{
+	    Vec3 f = forward.normalize();
+	    Vec3 r = Vec3::cross(up, f).normalize();
+	    Vec3 u = Vec3::cross(f, r);
+
+	    Quaternion result;
+
+	    float trace = r.x + u.y + f.z;
+
+	    if (trace > 0) {
+	        float s = std::sqrt(trace + 1.0f) * 2.0f;
+
+	        result.w = 0.25f * s;
+	        result.x = (u.z - f.y) / s;
+	        result.y = (f.x - r.z) / s;
+	        result.z = (r.y - u.x) / s;
+	    } else if (r.x > u.y && r.x > f.z) {
+	        float s = std::sqrt(1.0f + r.x - u.y - f.z) * 2.0f;
+
+	        result.w = (u.z - f.y) / s;
+	        result.x = 0.25f * s;
+	        result.y = (u.x + r.y) / s;
+	        result.z = (f.x + r.z) / s;
+	    } else if (u.y > f.z) {
+	        float s = std::sqrt(1.0f + u.y - r.x - f.z) * 2.0f;
+
+	        result.w = (f.x - r.z) / s;
+	        result.x = (u.x + r.y) / s;
+	        result.y = 0.25f * s;
+	        result.z = (f.y + u.z) / s;
+	    } else {
+	        float s = std::sqrt(1.0f + f.z - r.x - u.y) * 2.0f;
+
+	        result.w = (r.y - u.x) / s;
+	        result.x = (f.x + r.z) / s;
+	        result.y = (f.y + u.z) / s;
+	        result.z = 0.25f * s;
+	    }
+
+	    return result.normalized();
 	}
 
 	float x, y, z, w;

@@ -51,29 +51,29 @@ public:
 		return result;
 	}
 
-	void rotateByEuler(const Vec3& eulerDegrees) {
+	void rotateBy(const Vec3& deltaRotation) {
 	    Quaternion delta = (
-	        Quaternion::fromAxisAngle(Vec3(1,0,0), eulerDegrees.x) *
-	        Quaternion::fromAxisAngle(Vec3(0,1,0), eulerDegrees.y) *
-	        Quaternion::fromAxisAngle(Vec3(0,0,1), eulerDegrees.z)
+	        Quaternion::fromAxisAngle(Vec3(1,0,0), deltaRotation.x) *
+	        Quaternion::fromAxisAngle(Vec3(0,1,0), deltaRotation.y) *
+	        Quaternion::fromAxisAngle(Vec3(0,0,1), deltaRotation.z)
 	    );
 	    
 	    rotation = rotation * delta;
 	}
 
-	void rotateByQuaternion(const Quaternion& newRotation) {
-		rotation = rotation * newRotation;
+	void rotateBy(const Quaternion& deltaRotation) {
+		rotation = rotation * deltaRotation;
 	}
 
-	void moveBy(const Vec3& offset) {
-		position = position + offset;
+	void moveBy(const Vec3& deltaPosition) {
+		position = position + deltaPosition;
 	}
 
-	void scaleBy(const Vec3& factor) {
-		scale = scale * factor;
+	void scaleBy(const Vec3& deltaScale) {
+		scale = scale * deltaScale;
 	}
 
-	void setRotationEuler(const Vec3& newRotation) {
+	void setRotation(const Vec3& newRotation) {
     	rotation = (
     		Quaternion::fromAxisAngle(Vec3(1,0,0), newRotation.x) *
     		Quaternion::fromAxisAngle(Vec3(0,1,0), newRotation.y) *
@@ -81,7 +81,7 @@ public:
 		);
 	}
 
-	void setRotationQuaternion(const Quaternion& newRotation) {
+	void setRotation(const Quaternion& newRotation) {
     	rotation = newRotation;
 	}
 
@@ -91,6 +91,27 @@ public:
 
 	void setScale(const Vec3& newScale) {
     	scale = newScale;
+	}
+
+	Vec3 forward() const {
+	    return rotation * Vec3(0, 0, -1);
+	}
+
+	Vec3 right() const {
+	    return rotation * Vec3(1, 0, 0);
+	}
+
+	Vec3 up() const {
+	    return rotation * Vec3(0, 1, 0);
+	}
+
+	void lookAt(const Vec3& target) {
+	    Vec3 direction = target - position;
+
+	    rotation = Quaternion::lookRotation(
+	        direction,
+	        Vec3(0,1,0)
+	    );
 	}
 private:
 

@@ -72,6 +72,34 @@ public:
 		return result;
 	}
 
+	Vec3 operator*(float scalar) const {
+	    Vec3 result;
+
+	    result.x = x * scalar;
+		result.y = y * scalar;
+		result.z = z * scalar;
+
+	    return result;
+	}
+
+	Vec3 operator/(float scalar) const {
+	    Vec3 result;
+
+	    result.x = x / scalar;
+		result.y = y / scalar;
+		result.z = z / scalar;
+
+	    return result;
+	}
+
+	friend Vec3 operator*(float scalar, const Vec3& v) {
+	    return v * scalar;
+	}
+
+	friend Vec3 operator/(float scalar, const Vec3& v) {
+	    return v / scalar;
+	}
+
 	float length() const {
 		return std::sqrt(
 			(x * x) +
@@ -98,6 +126,16 @@ public:
 		result.x = (a.y * b.z) - (a.z * b.y);
 		result.y = (a.z * b.x) - (a.x * b.z);
 		result.z = (a.x * b.y) - (a.y * b.x);
+
+		return result;
+	}
+
+	Vec3 cross(const Vec3& other) const {
+	    Vec3 result;
+
+		result.x = other.z - z * other.y,
+		result.y = other.x - x * other.z,
+		result.z = other.y - y * other.x;
 
 		return result;
 	}
