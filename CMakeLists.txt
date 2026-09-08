@@ -4,9 +4,7 @@ project(wrench VERSION 0.0.0 LANGUAGES CXX C)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED TRUE)
-
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
-
 set(GLFW_INCLUDE_NONE ON)
 
 # --- Dependencies ---
@@ -58,28 +56,55 @@ target_link_libraries(wrench PRIVATE
 
 target_compile_options(wrench PRIVATE
     $<$<CONFIG:Debug>:
-        -g3 -O0 -DWRENCH_DEBUG -Werror
-        -fno-omit-frame-pointer -fno-inline
-        -fstack-protector-all -Wall -Wextra
-        -Wpedantic -Wshadow -Wconversion
-        -Wsign-conversion -Wnull-dereference
-        -Wdouble-promotion -fsanitize=address,undefined,leak
-        -fsanitize-address-use-after-scope
+        -g3
+        -O0
+        -DWRENCH_DEBUG
+        -Werror
+        -fno-omit-frame-pointer
+        -fno-inline
+        -fstack-protector-all
+        -Wall
+        -Wextra
+        -Wpedantic
+        -Wshadow
+        -Wconversion
+        -Wsign-conversion
+        -Wnull-dereference
+        -Wdouble-promotion
+        -Wformat=2
+        -Wimplicit-fallthrough
+        -Wcast-align
+        -Wcast-qual
+        -Wstrict-aliasing
 
         $<$<COMPILE_LANGUAGE:CXX>:
             -Wnon-virtual-dtor
             -Wold-style-cast
+            -Woverloaded-virtual
+            -Wuseless-cast
         >
     >
+
     $<$<CONFIG:Release>:
-        -O3 -DNDEBUG -g0 -fomit-frame-pointer
-        -flto -funroll-loops -fmerge-all-constants
-        -fno-stack-protector -DWRENCH_RELEASE
+        -O3
+        -DNDEBUG
+        -DWRENCH_RELEASE
+        -g0
+        -funroll-loops
+        -ffunction-sections
+        -fno-omit-frame-pointer
+        -fvisibility=hidden
+        -fdata-sections
     >
 )
-target_link_options(wrench PUBLIC
-    $<$<CONFIG:Debug>:-fsanitize=address,undefined,leak>
-    $<$<CONFIG:Release>:-flto -s>
+
+target_link_options(wrench PRIVATE
+    $<$<CONFIG:Debug>:>
+    $<$<CONFIG:Release>:
+        -flto
+        -Wl,--gc-sections
+        -s
+    >
 )
 
 # --- Install Rules ---
