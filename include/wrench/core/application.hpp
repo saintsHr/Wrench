@@ -35,7 +35,7 @@ friend class Engine;
 public:
     virtual ~Application() = default;
 
-    virtual void onInit() {}
+    virtual void onInitialize() {}
     virtual void onUpdate() {}
     virtual void onRender() {}
     virtual void onShutdown() {}

@@ -29,10 +29,7 @@ SOFTWARE.
 
 namespace Wrench {
 
-void Engine::init(Application& app) {
-	app_ = &app;
-	app.engine_ = this;
-
+Engine::Engine() {
 	glfwInit();
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
@@ -43,35 +40,33 @@ void Engine::init(Application& app) {
     window_.makeContextCurrent();
 
     renderer_.init(window_);
-
-    app_->onInit();
 }
 
-void Engine::run() {
-	if (app_ == nullptr) return;
+void Engine::run(Application& app) {
+	app.engine_ = this;
+
+	app.onInitialize();
 
 	running_ = true;
-
 	while (running_) {
 		window_.pollEvents();
 
-		app_->onUpdate();
+		app.onUpdate();
 
 		renderer_.beginFrame();
-		app_->onRender();
+		app.onRender();
 		renderer_.endFrame();
 
 		window_.swapBuffers();
 
 		if (window_.shouldClose()) running_ = false;
 	}
+
+	app.onShutdown();
 }
 
-void Engine::shutdown() {
-	if (app_ == nullptr) return;
-	app_->onShutdown();
-
-	glfwTerminate();
+Engine::~Engine() {
+    glfwTerminate();
 }
 
 Window& Engine::window(void) {

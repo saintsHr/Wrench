@@ -32,9 +32,10 @@ namespace Wrench {
 
 class Engine {
 public:
-	void init(Application& app);
-	void run();
-	void shutdown();
+	Engine();
+	~Engine();
+
+	void run(Application& app);
 
 	Window& window(void);
 	const Window& window(void) const;
@@ -43,7 +44,6 @@ public:
 	const Renderer& renderer(void) const;
 private:
 	bool running_ = false;
-	Application* app_ = nullptr;
 
 	Window window_;
 	Renderer renderer_;
