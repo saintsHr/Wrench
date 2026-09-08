@@ -26,6 +26,7 @@ SOFTWARE.
 
 #include "wrench/core/application.hpp"
 #include "wrench/renderer/renderer.hpp"
+#include "wrench/utils/log.hpp"
 #include "wrench/window/window.hpp"
 
 namespace Wrench {
@@ -47,6 +48,7 @@ private:
 
 	Window window_;
 	Renderer renderer_;
+	Logger logger_;
 };
 
 }

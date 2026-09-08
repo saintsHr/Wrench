@@ -19,6 +19,7 @@ if(CCACHE_PROGRAM)
 endif()
 
 include(CMakePackageConfigHelpers)
+
 find_package(glfw3 REQUIRED)
 
 # --- Engine Build ---
@@ -31,6 +32,8 @@ add_library(wrench STATIC
     src/wrench/renderer/renderer.cpp
     src/wrench/renderer/shader.cpp
     src/wrench/renderer/mesh.cpp
+
+    src/wrench/utils/log.cpp
 
     third_party/src/glad.c
 )
