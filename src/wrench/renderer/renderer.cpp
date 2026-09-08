@@ -23,8 +23,8 @@ SOFTWARE.
 */
 
 #include "wrench/renderer/renderer.hpp"
-#include "glad.h"
 #include "wrench/window/window.hpp"
+#include <glad.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
 #include <sys/cdefs.h>

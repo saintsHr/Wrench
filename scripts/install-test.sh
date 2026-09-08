@@ -1,4 +1,13 @@
 #!/bin/sh
 set -e
 
-sudo cmake --install build --prefix ./install-test
+BUILD_TYPE="${1:-release}"
+
+if [ "$BUILD_TYPE" != "release" ] && [ "$BUILD_TYPE" != "debug" ]; then
+    echo "usage: $0 [release|debug]"
+    exit 1
+fi
+
+BUILD_DIR="build/$BUILD_TYPE"
+
+sudo cmake --install "$BUILD_DIR" --prefix ./install-test
