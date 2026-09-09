@@ -21,26 +21,27 @@ endif()
 include(CMakePackageConfigHelpers)
 
 find_package(glfw3 REQUIRED)
+find_package(OpenGL REQUIRED)
 
 # --- Engine Build ---
 
 add_library(wrench STATIC
-    src/wrench/core/engine.cpp
+    ${CMAKE_SOURCE_DIR}/src/wrench/core/engine.cpp
 
-    src/wrench/window/window.cpp
+    ${CMAKE_SOURCE_DIR}/src/wrench/window/window.cpp
 
-    src/wrench/renderer/renderer.cpp
-    src/wrench/renderer/shader.cpp
-    src/wrench/renderer/mesh.cpp
+    ${CMAKE_SOURCE_DIR}/src/wrench/renderer/renderer.cpp
+    ${CMAKE_SOURCE_DIR}/src/wrench/renderer/shader.cpp
+    ${CMAKE_SOURCE_DIR}/src/wrench/renderer/mesh.cpp
 
-    src/wrench/utils/log.cpp
-    src/wrench/utils/timer.cpp
+    ${CMAKE_SOURCE_DIR}/src/wrench/utils/log.cpp
+    ${CMAKE_SOURCE_DIR}/src/wrench/utils/timer.cpp
 
-    third_party/src/glad.c
+    ${CMAKE_SOURCE_DIR}/third_party/src/glad.c
 )
 
 set_source_files_properties(
-    third_party/src/glad.c
+    ${CMAKE_SOURCE_DIR}/third_party/src/glad.c
 
     PROPERTIES COMPILE_OPTIONS "-w"
 )
@@ -51,22 +52,33 @@ target_include_directories(wrench PUBLIC
 )
 
 target_include_directories(wrench SYSTEM PRIVATE
-    third_party/include
+    ${CMAKE_SOURCE_DIR}/third_party/include
 )
 
 target_link_libraries(wrench PRIVATE
     glfw
+    OpenGL::GL
 )
+
+# ================================================================
+# Compiler Options
+# ================================================================
+
+# Common debug
 
 target_compile_options(wrench PRIVATE
     $<$<CONFIG:Debug>:
         -g3
         -O0
+
         -DWRENCH_DEBUG
+
         -Werror
+
         -fno-omit-frame-pointer
         -fno-inline
         -fstack-protector-all
+
         -Wall
         -Wextra
         -Wpedantic
@@ -80,20 +92,50 @@ target_compile_options(wrench PRIVATE
         -Wcast-align
         -Wcast-qual
         -Wstrict-aliasing
-
+        
         $<$<COMPILE_LANGUAGE:CXX>:
             -Wnon-virtual-dtor
             -Wold-style-cast
             -Woverloaded-virtual
-            -Wuseless-cast
         >
     >
+)
 
+# GCC debug
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(wrench PRIVATE
+        $<$<CONFIG:Debug>:
+            $<$<COMPILE_LANGUAGE:CXX>:
+                -Wuseless-cast
+            >
+        >
+    )
+endif()
+
+# Clang debug
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(wrench PRIVATE
+        $<$<CONFIG:Debug>:
+            $<$<COMPILE_LANGUAGE:CXX>:
+                
+            >
+        >
+    )
+endif()
+
+# Common release
+
+target_compile_options(wrench PRIVATE
     $<$<CONFIG:Release>:
         -O3
+
         -DNDEBUG
         -DWRENCH_RELEASE
+
         -g0
+
         -funroll-loops
         -ffunction-sections
         -fno-omit-frame-pointer
@@ -102,14 +144,86 @@ target_compile_options(wrench PRIVATE
     >
 )
 
+# GCC release
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(wrench PRIVATE
+        $<$<CONFIG:Release>:
+            
+        >
+    )
+endif()
+
+# Clang release
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_compile_options(wrench PRIVATE
+        $<$<CONFIG:Release>:
+            
+        >
+    )
+endif()
+
+# ================================================================
+# Linker Options
+# ================================================================
+
+# Common debug
+
 target_link_options(wrench PRIVATE
-    $<$<CONFIG:Debug>:>
-    $<$<CONFIG:Release>:
-        -flto
-        -Wl,--gc-sections
-        -s
+    $<$<CONFIG:Debug>:
+        
     >
 )
+
+# Common Release
+
+target_link_options(wrench PRIVATE
+    $<$<CONFIG:Release>:
+        
+    >
+)
+
+# GCC debug
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_options(wrench PRIVATE
+        $<$<CONFIG:Debug>:
+            
+        >
+    )
+endif()
+
+# Clang debug
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_link_options(wrench PRIVATE
+        $<$<CONFIG:Debug>:
+            
+        >
+    )
+endif()
+
+
+# GCC release
+
+if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_link_options(wrench PRIVATE
+        $<$<CONFIG:Release>:
+            
+        >
+    )
+endif()
+
+# Clang release
+
+if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    target_link_options(wrench PRIVATE
+        $<$<CONFIG:Release>:
+            
+        >
+    )
+endif()
 
 # --- compile_commands.json Copy & Move ---
 
