@@ -2,7 +2,6 @@
 
 #include "wrench/utils/vector/vec3.hpp"
 #include "wrench/utils/vector/vec2.hpp"
-
 #include <vector>
 
 namespace Wrench {

@@ -27,6 +27,7 @@ SOFTWARE.
 #include "wrench/core/application.hpp"
 #include "wrench/renderer/renderer.hpp"
 #include "wrench/utils/log.hpp"
+#include "wrench/utils/timer.hpp"
 #include "wrench/window/window.hpp"
 
 namespace Wrench {
@@ -43,8 +44,12 @@ public:
 
 	Renderer& renderer(void);
 	const Renderer& renderer(void) const;
+
+	Logger& logger(void);
+	const Logger& logger(void) const;
 private:
 	bool running_ = false;
+	Timer startup_timer_;
 
 	Window window_;
 	Renderer renderer_;

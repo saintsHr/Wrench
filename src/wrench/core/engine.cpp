@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "wrench/core/engine.hpp"
+#include "wrench/utils/log.hpp"
 
 #include <glad.h>
 #include <GLFW/glfw3.h>
@@ -30,24 +31,88 @@ SOFTWARE.
 namespace Wrench {
 
 Engine::Engine() {
-	glfwInit();
+	startup_timer_.Reset();
+
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Initializing engine...",
+		nullptr
+	);
+
+	if (!glfwInit()) {
+		logger_.Log(
+			LogLevel::Fatal,
+			LogCategory::Window,
+			"Failed to initialize GLFW.",
+			nullptr
+		);
+	}
 
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 4);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 6);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
 
+    logger_.Log(
+		LogLevel::Info,
+		LogCategory::Window,
+		"Initializing window...",
+		nullptr
+	);
     window_.create();
     window_.makeContextCurrent();
+    logger_.Log(
+		LogLevel::Info,
+		LogCategory::Window,
+		"Window initialized.",
+		nullptr
+	);
 
+    logger_.Log(
+		LogLevel::Info,
+		LogCategory::Renderer,
+		"Initializing renderer...",
+		nullptr
+	);
     renderer_.init(window_);
+    logger_.Log(
+		LogLevel::Info,
+		LogCategory::Renderer,
+		"Renderer initialized.",
+		nullptr
+	);
+
+    logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Engine initialized in {} ms.",
+		startup_timer_.ElapsedMilliseconds()
+	);
+
+	startup_timer_.Reset();
 }
 
 void Engine::run(Application& app) {
 	app.engine_ = this;
 
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Initializing application...",
+		nullptr
+	);
+
 	app.onInitialize();
 
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Application initialized.",
+		nullptr
+	);
+
 	running_ = true;
+
 	while (running_) {
 		window_.pollEvents();
 
@@ -59,14 +124,63 @@ void Engine::run(Application& app) {
 
 		window_.swapBuffers();
 
-		if (window_.shouldClose()) running_ = false;
+		if (window_.shouldClose()) {
+			logger_.Log(
+				LogLevel::Info,
+				LogCategory::Window,
+				"Window close requested.",
+				nullptr
+			);
+
+			running_ = false;
+		}
 	}
 
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Shutting down application...",
+		nullptr
+	);
+
 	app.onShutdown();
+
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Application shutdown complete.",
+		nullptr
+	);
 }
 
 Engine::~Engine() {
-    glfwTerminate();
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Shutting down engine...",
+		nullptr
+	);
+
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Window,
+		"Shutting down GLFW...",
+		nullptr
+	);
+	glfwTerminate();
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Window,
+		"GLFW shutdown complete.",
+		nullptr
+	);
+
+	logger_.Log(
+		LogLevel::Info,
+		LogCategory::Core,
+		"Engine shutdown complete.",
+		nullptr
+	);
 }
 
 Window& Engine::window(void) {
@@ -75,6 +189,22 @@ Window& Engine::window(void) {
 
 const Window& Engine::window(void) const {
 	return window_;
+}
+
+Renderer& Engine::renderer(void) {
+	return renderer_;
+}
+
+const Renderer& Engine::renderer(void) const {
+	return renderer_;
+}
+
+Logger& Engine::logger(void) {
+	return logger_;
+}
+
+const Logger& Engine::logger(void) const {
+	return logger_;
 }
 
 }

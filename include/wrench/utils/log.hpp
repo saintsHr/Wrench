@@ -2,6 +2,7 @@
 
 #include <chrono>
 #include <string_view>
+#include "wrench/utils/timer.hpp"
 
 namespace Wrench {
 
@@ -22,8 +23,6 @@ enum class LogCategory {
 
 class Logger {
 public:
-	Logger();
-
 	template<typename... Args>
 	void Log(
 		LogLevel level,
@@ -52,7 +51,7 @@ private:
 		std::string_view message
 	);
 
-	Clock::time_point start_time_;
+	Timer timer_;
 };
 
 }

@@ -34,6 +34,7 @@ add_library(wrench STATIC
     src/wrench/renderer/mesh.cpp
 
     src/wrench/utils/log.cpp
+    src/wrench/utils/timer.cpp
 
     third_party/src/glad.c
 )

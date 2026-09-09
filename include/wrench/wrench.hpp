@@ -26,15 +26,14 @@ SOFTWARE.
 
 #include "wrench/core/engine.hpp"
 #include "wrench/core/application.hpp"
-
 #include "wrench/window/window.hpp"
-
 #include "wrench/renderer/renderer.hpp"
 #include "wrench/renderer/shader.hpp"
 #include "wrench/renderer/mesh.hpp"
-
 #include "wrench/utils/vector/math.hpp"
 #include "wrench/utils/vector/vec2.hpp"
 #include "wrench/utils/vector/vec3.hpp"
 #include "wrench/utils/vector/mat4.hpp"
 #include "wrench/utils/vector/quaternion.hpp"
+#include "wrench/utils/log.hpp"
+#include "wrench/utils/timer.hpp"

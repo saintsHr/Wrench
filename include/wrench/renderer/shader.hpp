@@ -27,7 +27,6 @@ SOFTWARE.
 #include "wrench/utils/vector/vec3.hpp"
 #include "wrench/utils/vector/vec2.hpp"
 #include "wrench/utils/vector/mat4.hpp"
-
 #include <string>
 #include <unordered_map>
 

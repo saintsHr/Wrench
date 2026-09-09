@@ -1,24 +1,16 @@
-#include "wrench/utils/log.hpp"
-
-#include <chrono>
 #include <cstdint>
+#include <cstdlib>
 #include <iomanip>
 #include <ostream>
 #include <sstream>
 #include <iostream>
 
+#include "wrench/utils/log.hpp"
+
 namespace Wrench {
 
-Logger::Logger() {
-	start_time_ = Clock::now();
-}
-
 std::string Logger::get_timestamp_() const {
-	uint64_t ms = static_cast<uint64_t>(
-		std::chrono::duration_cast<std::chrono::milliseconds>(
-			Clock::now() - start_time_
-		).count()
-	);
+	uint64_t ms = timer_.ElapsedMilliseconds();
 
 	uint64_t sec = ms / 1000;
 	uint64_t min = sec / 60;
@@ -73,13 +65,17 @@ void Logger::Log(
 		<< "["
 		<< get_timestamp_()
 		<< "]["
-		<< level_to_string_(level)
-		<< "]["
 		<< category_to_string_(category)
+		<< "]["
+		<< level_to_string_(level)
 		<< "] "
 		<< message
 		<< '\n'
 	;
+
+	std::cout.flush();
+
+	if (level == LogLevel::Fatal) exit(EXIT_FAILURE);
 }
 
 }
