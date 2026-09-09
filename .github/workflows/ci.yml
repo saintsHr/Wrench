@@ -25,7 +25,12 @@ jobs:
       - name: Install dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y cmake ninja-build ccache
+          sudo apt-get install -y \
+            cmake \
+            ninja-build \
+            ccache \
+            libglfw3-dev \
+            libgl1-mesa-dev
 
       - name: Configure compiler
         run: |
