@@ -1,0 +1,50 @@
+[
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/c++  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -std=c++20 -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -o CMakeFiles/Wrench.dir/src/wrench/core/engine.cpp.o -c /home/henrique/Desktop/Projects/Wrench/src/wrench/core/engine.cpp",
+  "file": "/home/henrique/Desktop/Projects/Wrench/src/wrench/core/engine.cpp",
+  "output": "CMakeFiles/Wrench.dir/src/wrench/core/engine.cpp.o"
+},
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/c++  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -std=c++20 -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -o CMakeFiles/Wrench.dir/src/wrench/window/window.cpp.o -c /home/henrique/Desktop/Projects/Wrench/src/wrench/window/window.cpp",
+  "file": "/home/henrique/Desktop/Projects/Wrench/src/wrench/window/window.cpp",
+  "output": "CMakeFiles/Wrench.dir/src/wrench/window/window.cpp.o"
+},
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/c++  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -std=c++20 -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -o CMakeFiles/Wrench.dir/src/wrench/renderer/renderer.cpp.o -c /home/henrique/Desktop/Projects/Wrench/src/wrench/renderer/renderer.cpp",
+  "file": "/home/henrique/Desktop/Projects/Wrench/src/wrench/renderer/renderer.cpp",
+  "output": "CMakeFiles/Wrench.dir/src/wrench/renderer/renderer.cpp.o"
+},
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/c++  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -std=c++20 -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -o CMakeFiles/Wrench.dir/src/wrench/renderer/shader.cpp.o -c /home/henrique/Desktop/Projects/Wrench/src/wrench/renderer/shader.cpp",
+  "file": "/home/henrique/Desktop/Projects/Wrench/src/wrench/renderer/shader.cpp",
+  "output": "CMakeFiles/Wrench.dir/src/wrench/renderer/shader.cpp.o"
+},
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/c++  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -std=c++20 -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -o CMakeFiles/Wrench.dir/src/wrench/renderer/mesh.cpp.o -c /home/henrique/Desktop/Projects/Wrench/src/wrench/renderer/mesh.cpp",
+  "file": "/home/henrique/Desktop/Projects/Wrench/src/wrench/renderer/mesh.cpp",
+  "output": "CMakeFiles/Wrench.dir/src/wrench/renderer/mesh.cpp.o"
+},
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/c++  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -std=c++20 -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -o CMakeFiles/Wrench.dir/src/wrench/utils/log.cpp.o -c /home/henrique/Desktop/Projects/Wrench/src/wrench/utils/log.cpp",
+  "file": "/home/henrique/Desktop/Projects/Wrench/src/wrench/utils/log.cpp",
+  "output": "CMakeFiles/Wrench.dir/src/wrench/utils/log.cpp.o"
+},
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/c++  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -std=c++20 -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -Wnon-virtual-dtor -Wold-style-cast -Woverloaded-virtual -Wuseless-cast -o CMakeFiles/Wrench.dir/src/wrench/utils/timer.cpp.o -c /home/henrique/Desktop/Projects/Wrench/src/wrench/utils/timer.cpp",
+  "file": "/home/henrique/Desktop/Projects/Wrench/src/wrench/utils/timer.cpp",
+  "output": "CMakeFiles/Wrench.dir/src/wrench/utils/timer.cpp.o"
+},
+{
+  "directory": "/home/henrique/Desktop/Projects/Wrench/build/debug",
+  "command": "/usr/bin/cc  -I/home/henrique/Desktop/Projects/Wrench/include -isystem /home/henrique/Desktop/Projects/Wrench/third_party/include -g -g3 -O0 -Werror -fno-omit-frame-pointer -fno-inline -fstack-protector-all -Wall -Wextra -Wpedantic -Wshadow -Wconversion -Wsign-conversion -Wnull-dereference -Wdouble-promotion -Wformat=2 -Wimplicit-fallthrough -Wcast-align -Wcast-qual -Wstrict-aliasing -w -o CMakeFiles/Wrench.dir/third_party/src/glad.c.o -c /home/henrique/Desktop/Projects/Wrench/third_party/src/glad.c",
+  "file": "/home/henrique/Desktop/Projects/Wrench/third_party/src/glad.c",
+  "output": "CMakeFiles/Wrench.dir/third_party/src/glad.c.o"
+}
+]

@@ -25,6 +25,7 @@ SOFTWARE.
 #include "wrench/core/engine.hpp"
 #include "wrench/utils/log.hpp"
 
+#include <cstdlib>
 #include <glad.h>
 #include <GLFW/glfw3.h>
 

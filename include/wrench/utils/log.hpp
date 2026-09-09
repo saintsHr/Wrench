@@ -1,7 +1,7 @@
 #pragma once
 
 #include <chrono>
-#include <string_view>
+#include <string>
 #include "wrench/utils/timer.hpp"
 
 namespace Wrench {
