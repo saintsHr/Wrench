@@ -1,0 +1,49 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      fail-fast: false
+      matrix:
+        compiler:
+          - gcc
+          - clang
+        build_type:
+          - Debug
+          - Release
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y cmake ninja-build ccache
+
+      - name: Configure compiler
+        run: |
+          if [ "${{ matrix.compiler }}" = "gcc" ]; then
+            echo "CC=gcc" >> "$GITHUB_ENV"
+            echo "CXX=g++" >> "$GITHUB_ENV"
+          else
+            echo "CC=clang" >> "$GITHUB_ENV"
+            echo "CXX=clang++" >> "$GITHUB_ENV"
+          fi
+
+      - name: Configure build
+        run: |
+          cmake -S . -B build \
+            -G Ninja \
+            -DCMAKE_BUILD_TYPE=${{ matrix.build_type }} \
+            -DCMAKE_C_COMPILER_LAUNCHER=ccache \
+            -DCMAKE_CXX_COMPILER_LAUNCHER=ccache
+
+      - name: Build
+        run: cmake --build build --parallel
