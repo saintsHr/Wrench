@@ -30,9 +30,10 @@ SOFTWARE.
 #include <sys/cdefs.h>
 
 static void framebuffer_size_callback(
-	__attribute__((unused)) GLFWwindow* window,
+	GLFWwindow* window,
 	int width, int height
 ) {
+	static_cast<void>(window);
     glViewport(0, 0, width, height);
 }
 
@@ -50,9 +51,14 @@ void Renderer::init(Window& window) {
 		static_cast<int>(window.getSize().y)
 	);
 
+	glEnable(GL_DEPTH_TEST);
+	glDepthFunc(GL_LESS);
+
+	glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);
 	glFrontFace(GL_CCW);
-	glEnable(GL_CULL_FACE);
+
+	glEnable(GL_STENCIL_TEST);
 }
 
 void Renderer::beginFrame(void) {
