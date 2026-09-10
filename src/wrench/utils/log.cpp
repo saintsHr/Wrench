@@ -9,6 +9,8 @@
 
 namespace Wrench {
 
+Logger* gLogger = nullptr;
+
 std::string Logger::get_timestamp_() const {
 	uint64_t ms = timer_.ElapsedMilliseconds();
 
@@ -56,7 +58,7 @@ const char* Logger::category_to_string_(LogCategory category) const {
 	}
 }
 
-void Logger::Log(
+void Logger::write_(
 	LogLevel level,
 	LogCategory category,
 	std::string_view message
@@ -75,7 +77,7 @@ void Logger::Log(
 
 	std::cout.flush();
 
-	if (level == LogLevel::Fatal) exit(EXIT_FAILURE);
+	if (level == LogLevel::Fatal) std::exit(EXIT_FAILURE);
 }
 
 }

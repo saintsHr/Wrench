@@ -25,14 +25,13 @@ SOFTWARE.
 #include "wrench/core/engine.hpp"
 #include "wrench/utils/log.hpp"
 
-#include <cstdlib>
 #include <glad.h>
 #include <GLFW/glfw3.h>
 
 namespace Wrench {
 
 Engine::Engine() {
-	startup_timer_.Reset();
+	gLogger = &logger_;
 
 	logger_.Log(
 		LogLevel::Info,
@@ -79,28 +78,13 @@ Engine::Engine() {
 		nullptr
 	);
 
-    logger_.Log(
-		LogLevel::Info,
-		LogCategory::Renderer,
-		"Initializing renderer...",
-		nullptr
-	);
     renderer_.init(window_);
-    logger_.Log(
-		LogLevel::Info,
-		LogCategory::Renderer,
-		"Renderer initialized.",
-		nullptr
-	);
 
     logger_.Log(
 		LogLevel::Info,
 		LogCategory::Core,
-		"Engine initialized in {} ms.",
-		startup_timer_.ElapsedMilliseconds()
+		"Engine initialized."
 	);
-
-	startup_timer_.Reset();
 }
 
 void Engine::run(Application& app) {
@@ -136,13 +120,6 @@ void Engine::run(Application& app) {
 		window_.swapBuffers();
 
 		if (window_.shouldClose()) {
-			logger_.Log(
-				LogLevel::Info,
-				LogCategory::Window,
-				"Window close requested.",
-				nullptr
-			);
-
 			running_ = false;
 		}
 	}
@@ -165,6 +142,8 @@ void Engine::run(Application& app) {
 }
 
 Engine::~Engine() {
+	gLogger = nullptr;
+
 	logger_.Log(
 		LogLevel::Info,
 		LogCategory::Core,

@@ -1,4 +1,5 @@
 #include "wrench/renderer/mesh.hpp"
+#include "wrench/utils/log.hpp"
 #include <glad.h>
 
 namespace Wrench {
@@ -12,11 +13,37 @@ Mesh::Mesh(
 	glCreateBuffers(1, &vbo_);
 	glCreateBuffers(1, &ebo_);
 
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Creating mesh (VAO: {}, VBO: {}, EBO: {}).",
+		vao_,
+		vbo_,
+		ebo_
+	);
+
 	// upload data to GPU
 	upload(vertices, indices);
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Mesh created with {} vertices and {} indices.",
+		vertices.size(),
+		indices.size()
+	);
 }
 
 Mesh::~Mesh() {
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Destroying mesh (VAO: {}, VBO: {}, EBO: {}).",
+		vao_,
+		vbo_,
+		ebo_
+	);
+
 	glDeleteBuffers(1, &ebo_);
 	glDeleteBuffers(1, &vbo_);
 	glDeleteVertexArrays(1, &vao_);
@@ -27,6 +54,15 @@ Mesh::~Mesh() {
 }
 
 Mesh::Mesh(Mesh&& other) noexcept {
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Moving mesh handles from VAO: {}, VBO: {}, EBO: {}.",
+		other.vao_,
+		other.vbo_,
+		other.ebo_
+	);
+
 	// moves "other" handles to "this"
 	this->ebo_ = other.ebo_;
 	this->vbo_ = other.vbo_;
@@ -40,6 +76,15 @@ Mesh::Mesh(Mesh&& other) noexcept {
 
 Mesh& Mesh::operator=(Mesh&& other) noexcept {
 	if (this == &other) return *this;
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Moving mesh handles (VAO: {}, VBO: {}, EBO: {}).",
+		other.vao_,
+		other.vbo_,
+		other.ebo_
+	);
 
 	// deletes "this" handles
  	glDeleteBuffers(1, &this->ebo_);
@@ -64,6 +109,14 @@ void Mesh::upload(
 	const std::vector<unsigned int>& indices
 ) {
 	indexCount_ = static_cast<unsigned int>(indices.size());
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Uploading mesh data (vertices: {}, indices: {}).",
+		vertices.size(),
+		indices.size()
+	);
 
 	// fills VBO with vertices
 	glNamedBufferData(
@@ -114,6 +167,14 @@ void Mesh::upload(
 		offsetof(Vertex, uv)
 	);
 	glVertexArrayAttribBinding(vao_, 2, 0);
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Mesh upload complete (VAO: {}, index count: {}).",
+		vao_,
+		indexCount_
+	);
 }
 
 void Mesh::draw() {

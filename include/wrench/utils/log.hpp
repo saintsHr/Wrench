@@ -23,6 +23,8 @@ enum class LogCategory {
 
 class Logger {
 public:
+	LogLevel Level = LogLevel::Info;
+
 	template<typename... Args>
 	void Log(
 		LogLevel level,
@@ -30,7 +32,9 @@ public:
 		std::format_string<Args...> format,
 		Args&&... args
 	) {
-		Log(
+		if (level < Level) return;
+
+		write_(
 			level, category,
 			std::format(
 				format,
@@ -45,7 +49,7 @@ private:
 	const char* level_to_string_(LogLevel level) const;
 	const char* category_to_string_(LogCategory category) const;
 
-	void Log(
+	void write_(
 		LogLevel level,
 		LogCategory category,
 		std::string_view message
@@ -53,5 +57,24 @@ private:
 
 	Timer timer_;
 };
+
+extern Logger* gLogger;
+
+template<typename... Args>
+inline void Log(
+	LogLevel level,
+	LogCategory category,
+	std::format_string<Args...> format,
+	Args&&... args
+) {
+	if (gLogger) {
+		gLogger->Log(
+			level,
+			category,
+			format,
+			std::forward<Args>(args)...
+		);
+	}
+}
 
 }

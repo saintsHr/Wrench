@@ -23,16 +23,40 @@ SOFTWARE.
 */
 
 #include "wrench/window/window.hpp"
+#include "wrench/utils/log.hpp"
 #include <GLFW/glfw3.h>
 
 namespace Wrench {
 
 Window::~Window() {
-	if (raw_ != nullptr) glfwDestroyWindow(raw_);
+	if (raw_ == nullptr) return;
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Window,
+		"Destroying window."
+	);
+
+	glfwDestroyWindow(raw_);
 	raw_ = nullptr;
+
+	Log(
+		LogLevel::Info,
+		LogCategory::Window,
+		"Window destroyed."
+	);
 }
 
 void Window::create(void) {
+	Log(
+		LogLevel::Debug,
+		LogCategory::Window,
+		"Creating window (Size: {}x{}, Title: '{}').",
+		DEFAULT_WINDOW_SIZE.x,
+		DEFAULT_WINDOW_SIZE.y,
+		DEFAULT_WINDOW_TITLE
+	);
+
 	GLFWwindow* window = glfwCreateWindow(
 		static_cast<int>(DEFAULT_WINDOW_SIZE.x),
 		static_cast<int>(DEFAULT_WINDOW_SIZE.y),
@@ -40,8 +64,24 @@ void Window::create(void) {
 		NULL, NULL
 	);
 
+	if(window == nullptr) {
+		Log(
+			LogLevel::Error,
+			LogCategory::Window,
+			"Failed to create window."
+		);
+
+		return;
+	}
+
 	size_ = DEFAULT_WINDOW_SIZE;
-	if (window != nullptr) raw_ = window;
+	raw_ = window;
+
+	Log(
+		LogLevel::Info,
+		LogCategory::Window,
+		"Window created successfully."
+	);
 }
 
 GLFWwindow* Window::nativeHandle(void) const {
@@ -50,8 +90,24 @@ GLFWwindow* Window::nativeHandle(void) const {
 
 bool Window::shouldClose(void) const {
 	if (raw_ != nullptr) {
-		return glfwWindowShouldClose(raw_);
+		bool close = glfwWindowShouldClose(raw_);
+
+		if(close) {
+			Log(
+				LogLevel::Debug,
+				LogCategory::Window,
+				"Window close requested."
+			);
+		}
+
+		return close;
 	}
+
+	Log(
+		LogLevel::Warning,
+		LogCategory::Window,
+		"Checking close state on invalid window."
+	);
 
 	return false;
 }
@@ -61,14 +117,37 @@ void Window::pollEvents(void) {
 }
 
 void Window::swapBuffers(void) {
-	if (raw_ != nullptr) glfwSwapBuffers(raw_);
+	if (raw_ != nullptr) {
+		glfwSwapBuffers(raw_);
+	}
 }
 
 void Window::makeContextCurrent(void) {
-	if (raw_ != nullptr) glfwMakeContextCurrent(raw_);
+	if (raw_ != nullptr) {
+		Log(
+			LogLevel::Debug,
+			LogCategory::Window,
+			"Making window context current."
+		);
+
+		glfwMakeContextCurrent(raw_);
+	} else {
+		Log(
+			LogLevel::Warning,
+			LogCategory::Window,
+			"Cannot make context current: invalid window."
+		);
+	}
 }
 
 void Window::setTitle(const std::string& title) {
+	Log(
+		LogLevel::Debug,
+		LogCategory::Window,
+		"Changing window title to '{}'.",
+		title
+	);
+
 	title_ = title;
 
 	if (raw_ != nullptr) {
@@ -76,10 +155,24 @@ void Window::setTitle(const std::string& title) {
 			raw_,
 			title.c_str()
 		);
+	} else {
+		Log(
+			LogLevel::Warning,
+			LogCategory::Window,
+			"Cannot set title: invalid window."
+		);
 	}
 }
 
 void Window::setSize(Vec2 size) {
+	Log(
+		LogLevel::Debug,
+		LogCategory::Window,
+		"Changing window size to {}x{}.",
+		size.x,
+		size.y
+	);
+
 	size_ = size;
 
 	if (raw_ != nullptr) {
@@ -87,6 +180,12 @@ void Window::setSize(Vec2 size) {
 			raw_,
 			static_cast<int>(size.x),
 			static_cast<int>(size.y)
+		);
+	} else {
+		Log(
+			LogLevel::Warning,
+			LogCategory::Window,
+			"Cannot set size: invalid window."
 		);
 	}
 }

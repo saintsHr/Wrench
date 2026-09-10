@@ -23,16 +23,48 @@ SOFTWARE.
 */
 
 #include "wrench/renderer/shader.hpp"
+#include "wrench/utils/log.hpp"
 #include <cstdlib>
 #include <glad.h>
-#include <iostream>
 #include <string>
-
-static constexpr int SHADER_LOG_SIZE = 1024;
 
 namespace Wrench {
 
 Shader::Shader(const std::string& vertexSource, const std::string& fragmentSource) {
+	if(vertexSource.empty()) {
+		Log(
+			LogLevel::Error,
+			LogCategory::Renderer,
+			"Cannot create shader: empty vertex source."
+		);
+
+		return;
+	}
+
+	if(fragmentSource.empty()) {
+		Log(
+			LogLevel::Error,
+			LogCategory::Renderer,
+			"Cannot create shader: empty fragment source."
+		);
+
+		return;
+	}
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Creating shader program."
+	);
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Shader source sizes (Vertex: {} bytes, Fragment: {} bytes).",
+		vertexSource.size(),
+		fragmentSource.size()
+	);
+
 	unsigned int vertexShader = 0;
 	unsigned int fragmentShader = 0;
 	unsigned int shaderProgram = 0;
@@ -46,15 +78,20 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	
 	std::string log_vertex = "";
 	std::string log_fragment = "";
-	std::string log_link = "";
-
-	log_vertex.resize(SHADER_LOG_SIZE);
-	log_fragment.resize(SHADER_LOG_SIZE);
-	log_link.resize(SHADER_LOG_SIZE);
+	std::string log_shader = "";
 
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
 	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
 	shaderProgram = glCreateProgram();
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Created shader objects (Vertex: {}, Fragment: {}, Program: {}).",
+		vertexShader,
+		fragmentShader,
+		shaderProgram
+	);
 
 	glShaderSource(
 		vertexShader,
@@ -70,6 +107,12 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 		nullptr
 	);
 
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Compiling shaders."
+	);
+
 	glCompileShader(vertexShader);
 	glCompileShader(fragmentShader);
 
@@ -77,17 +120,29 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	glGetShaderiv(fragmentShader, GL_COMPILE_STATUS, &success_fragment);
 
 	if(success_vertex == false) {
-	    glGetShaderInfoLog(
-	    	vertexShader,
-	    	static_cast<GLsizei>(log_vertex.size()),
-	    	NULL,
-	    	log_vertex.data()
-	    );
+	    GLint length = 0;
 
-	    std::cout
-	    	<< "Vertex shader failed to compile:\n"
-	    	<< log_vertex
-	    	<< std::endl;
+		glGetShaderiv(
+			vertexShader,
+			GL_INFO_LOG_LENGTH,
+			&length
+		);
+
+		log_vertex.resize(static_cast<size_t>(length));
+
+		glGetShaderInfoLog(
+			vertexShader,
+			length,
+			nullptr,
+			log_vertex.data()
+		);
+
+	    Log(
+			LogLevel::Error,
+			LogCategory::Renderer,
+			"Vertex shader compilation failed:\n{}",
+			log_vertex
+		);
 
 	    glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
@@ -97,17 +152,29 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	}
 
 	if(success_fragment == false) {
-	    glGetShaderInfoLog(
-	    	fragmentShader,
-	    	static_cast<GLsizei>(log_fragment.size()),
-	    	NULL,
-	    	log_fragment.data()
-	    );
+	    GLint length = 0;
 
-	    std::cout
-	    	<< "Fragment shader failed to compile:\n"
-	    	<< log_fragment
-	    	<< std::endl;
+		glGetShaderiv(
+			fragmentShader,
+			GL_INFO_LOG_LENGTH,
+			&length
+		);
+
+		log_fragment.resize(static_cast<size_t>(length));
+
+		glGetShaderInfoLog(
+			fragmentShader,
+			length,
+			nullptr,
+			log_fragment.data()
+		);
+
+	    Log(
+			LogLevel::Error,
+			LogCategory::Renderer,
+			"Fragment shader compilation failed:\n{}",
+			log_fragment
+		);
 
 	    glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
@@ -119,22 +186,41 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	glAttachShader(shaderProgram, vertexShader);
 	glAttachShader(shaderProgram, fragmentShader);
 
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Linking shader program {}.",
+		shaderProgram
+	);
+
 	glLinkProgram(shaderProgram);
 
 	glGetProgramiv(shaderProgram, GL_LINK_STATUS, &success_link);
 
 	if(success_link == false) {
-	    glGetProgramInfoLog(
-	    	shaderProgram,
-	    	static_cast<GLsizei>(log_link.size()),
-	    	NULL,
-	    	log_link.data()
-	    );
+	    GLint length = 0;
 
-	    std::cout
-	    	<< "Shader failed to link:\n"
-	    	<< log_link
-	    	<< std::endl;
+		glGetProgramiv(
+			shaderProgram,
+			GL_INFO_LOG_LENGTH,
+			&length
+		);
+
+		log_shader.resize(static_cast<size_t>(length));
+
+		glGetProgramInfoLog(
+			shaderProgram,
+			length,
+			nullptr,
+			log_shader.data()
+		);
+
+	    Log(
+			LogLevel::Error,
+			LogCategory::Renderer,
+			"Shader program linking failed:\n{}",
+			log_shader
+		);
 
 	    glDeleteShader(vertexShader);
 		glDeleteShader(fragmentShader);
@@ -147,13 +233,37 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	glDeleteShader(fragmentShader);
 
 	program_ = shaderProgram;
+
+	Log(
+		LogLevel::Info,
+		LogCategory::Renderer,
+		"Shader program created (ID: {}).",
+		program_
+	);
 }
 
 Shader::~Shader() {
-	glDeleteProgram(this->program_);
+	if (program_ == 0) return;
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Destroying shader program {}.",
+		program_
+	);
+
+	glDeleteProgram(program_);
+	program_ = 0;
 }
 
 Shader::Shader(Shader&& other) noexcept {
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Moving shader program {}.",
+		other.program_
+	);
+
 	this->program_ = other.program_;
 	other.program_ = 0;
 }
@@ -161,7 +271,15 @@ Shader::Shader(Shader&& other) noexcept {
 Shader& Shader::operator=(Shader&& other) noexcept {
 	if (this == &other) return *this;
 
-	glDeleteProgram(this->program_);
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Moving shader program {}.",
+		other.program_
+	);
+
+	if (this->program_ != 0) glDeleteProgram(this->program_);
+
 	this->program_ = other.program_;
 	other.program_ = 0;
 
@@ -169,31 +287,43 @@ Shader& Shader::operator=(Shader&& other) noexcept {
 }
 
 void Shader::use(void) {
+	Log(
+		LogLevel::Trace,
+		LogCategory::Renderer,
+		"Using shader program {}.",
+		program_
+	);
+
 	glUseProgram(this->program_);
 }
 
 void Shader::setUniformVec2(const std::string& name, const Vec2& value) const {
 	int loc = get_uniform_location_(name);
+	if (loc == -1) return;
 	glProgramUniform2f(program_, loc, value.x, value.y);
 }
 
 void Shader::setUniformVec3(const std::string& name, const Vec3& value) const {
 	int loc = get_uniform_location_(name);
+	if (loc == -1) return;
 	glProgramUniform3f(program_, loc, value.x, value.y, value.z);
 }
 
 void Shader::setUniformMat4(const std::string& name, const Mat4& value) const {
 	int loc = get_uniform_location_(name);
+	if (loc == -1) return;
 	glProgramUniformMatrix4fv(program_, loc, 1, GL_FALSE, value.data());
 }
 
 void Shader::setUniformFloat(const std::string& name, float value) const {
 	int loc = get_uniform_location_(name);
+	if (loc == -1) return;
 	glProgramUniform1f(program_, loc, value);
 }
 
 void Shader::setUniformInt(const std::string& name, int value) const {
 	int loc = get_uniform_location_(name);
+	if (loc == -1) return;
 	glProgramUniform1i(program_, loc, value);
 }
 
@@ -202,6 +332,25 @@ int Shader::get_uniform_location_(const std::string& name) const {
 	if (it != cache_.end()) return it->second;
 
 	int location = glGetUniformLocation(this->program_, name.c_str());
+
+	if (location == -1) {
+		Log(
+			LogLevel::Warning,
+			LogCategory::Renderer,
+			"Uniform '{}' not found in shader program {}.",
+			name,
+			program_
+		);
+	}
+
+	Log(
+		LogLevel::Debug,
+		LogCategory::Renderer,
+		"Caching uniform '{}' at location {}.",
+		name,
+		location
+	);
+
 	cache_[name] = location;
 
 	return location;
