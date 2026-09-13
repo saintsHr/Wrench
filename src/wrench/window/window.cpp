@@ -24,7 +24,29 @@ SOFTWARE.
 
 #include "wrench/window/window.hpp"
 #include "wrench/utils/log.hpp"
+#include "wrench/utils/vector/vec2.hpp"
 #include <GLFW/glfw3.h>
+
+namespace {
+
+static void window_size_callback(
+    GLFWwindow* window,
+    int width,
+    int height
+) {
+    auto* self = static_cast<Wrench::Window::Window*>(
+    	glfwGetWindowUserPointer(window)
+    );
+
+    if (self) self->setSize(
+        Wrench::Math::Vec2(
+        	static_cast<float>(width),
+        	static_cast<float>(height)
+        )
+    );
+}
+
+}
 
 namespace Wrench::Window {
 
@@ -76,6 +98,11 @@ void Window::create(void) {
 
 	size_ = DEFAULT_WINDOW_SIZE;
 	raw_ = window;
+	glfwSetWindowUserPointer(raw_, this);
+	glfwSetWindowSizeCallback(
+	    raw_,
+	    window_size_callback
+	);
 
 	Log(
 		LogLevel::Info,
@@ -165,14 +192,6 @@ void Window::setTitle(const std::string& title) {
 }
 
 void Window::setSize(Math::Vec2 size) {
-	Log(
-		LogLevel::Debug,
-		LogCategory::Window,
-		"Changing window size to {}x{}.",
-		size.x,
-		size.y
-	);
-
 	size_ = size;
 
 	if (raw_ != nullptr) {
@@ -180,6 +199,14 @@ void Window::setSize(Math::Vec2 size) {
 			raw_,
 			static_cast<int>(size.x),
 			static_cast<int>(size.y)
+		);
+
+		Log(
+			LogLevel::Debug,
+			LogCategory::Window,
+			"Window resized: {}x{}.",
+			size.x,
+			size.y
 		);
 	} else {
 		Log(

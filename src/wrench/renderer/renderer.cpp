@@ -30,7 +30,38 @@ SOFTWARE.
 #include <glad.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
+#include <string>
 #include <sys/cdefs.h>
+
+namespace {
+
+std::string standard_vertex_shader = R"(
+	#version 460 core
+
+	layout(location = 0) in vec3 position;
+
+	uniform mat4 model;
+	uniform mat4 view;
+	uniform mat4 projection;
+
+	void main() {
+	    gl_Position = projection * view * model * vec4(position, 1.0);
+	}
+)";
+
+std::string standard_fragment_shader = R"(
+	#version 460 core
+
+	out vec4 fragColor;
+
+	uniform vec3 albedo;
+
+	void main() {
+	    fragColor = vec4(albedo, 1.0);
+	}
+)";
+
+}
 
 static void framebuffer_size_callback(
 	GLFWwindow* window,
@@ -41,7 +72,7 @@ static void framebuffer_size_callback(
 
     Log(
 		Wrench::LogLevel::Debug,
-		Wrench::LogCategory::Window,
+		Wrench::LogCategory::Renderer,
 		"Framebuffer resized: {}x{}.",
 		width,
 		height
@@ -96,20 +127,22 @@ void Renderer::init(Window::Window& window) {
 		reinterpret_cast<const char*>(glGetString(GL_VENDOR))
 	);
 
-	glfwSetFramebufferSizeCallback(window.nativeHandle(), framebuffer_size_callback);
+	Log(
+		LogLevel::Info,
+		LogCategory::Renderer,
+		"Configuring OpenGL...",
+		window.getSize().x,
+		window.getSize().y
+	);
+
+	glfwSetFramebufferSizeCallback(
+		window.nativeHandle(), framebuffer_size_callback
+	);
 
 	glViewport(
 		0, 0,
 		static_cast<int>(window.getSize().x),
 		static_cast<int>(window.getSize().y)
-	);
-
-	Log(
-		LogLevel::Debug,
-		LogCategory::Renderer,
-		"Viewport initialized: {}x{}.",
-		window.getSize().x,
-		window.getSize().y
 	);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
@@ -122,6 +155,34 @@ void Renderer::init(Window::Window& window) {
 	glFrontFace(GL_CCW);
 
 	glEnable(GL_STENCIL_TEST);
+
+	Log(
+		LogLevel::Info,
+		LogCategory::Renderer,
+		"Configurated OpenGL.",
+		window.getSize().x,
+		window.getSize().y
+	);
+
+	Log(
+		LogLevel::Info,
+		LogCategory::Renderer,
+		"Compiling shaders...",
+		window.getSize().x,
+		window.getSize().y
+	);
+
+	default_shader_ = std::make_unique<Shader>(
+		standard_vertex_shader, standard_fragment_shader
+	);
+
+	Log(
+		LogLevel::Info,
+		LogCategory::Renderer,
+		"Shaders compiled.",
+		window.getSize().x,
+		window.getSize().y
+	);
 
 	Log(
 		LogLevel::Info,
@@ -153,18 +214,17 @@ void Renderer::renderScene(Scene::Scene& scene) {
 		return;
 	}
 
-
 	Math::Mat4 view = scene.activeCamera->getViewMatrix();
 	Math::Mat4 projection = scene.activeCamera->getProjectionMatrix();
 
 	auto drawables = scene.findNodesByType<Scene::DrawableNode>();
 
 	for (auto* drawable : drawables) {
-		if (!drawable->mesh || !drawable->shader) {
+		if (!drawable->mesh) {
 			Log(
 				LogLevel::Warning,
 				LogCategory::Renderer,
-				"Skipping drawable node '{}': invalid material.",
+				"Skipping drawable node '{}': invalid mesh.",
 				drawable->name.empty() ? "(unnamed)" : drawable->name
 			);
 			continue;
@@ -172,10 +232,15 @@ void Renderer::renderScene(Scene::Scene& scene) {
 
 		Math::Mat4 model = drawable->getWorldMatrix();
 
-		drawable->shader->use();
-		drawable->shader->setUniformMat4("model", model);
-		drawable->shader->setUniformMat4("view", view);
-		drawable->shader->setUniformMat4("projection", projection);
+		Color albedo = drawable->material.albedo;
+
+		default_shader_->use();
+
+		default_shader_->setUniformMat4("model", model);
+		default_shader_->setUniformMat4("view", view);
+		default_shader_->setUniformMat4("projection", projection);
+
+		default_shader_->setUniformColor("albedo", albedo);
 
 		drawable->mesh->draw();
 	}

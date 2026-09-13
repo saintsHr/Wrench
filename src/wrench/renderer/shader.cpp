@@ -315,6 +315,12 @@ void Shader::setUniformMat4(const std::string& name, const Math::Mat4& value) co
 	glProgramUniformMatrix4fv(program_, loc, 1, GL_FALSE, value.data());
 }
 
+void Shader::setUniformColor(const std::string& name, const Color& value) const {
+	int loc = get_uniform_location_(name);
+	if (loc == -1) return;
+	glProgramUniform3f(program_, loc, value.r, value.g, value.b);
+}
+
 void Shader::setUniformFloat(const std::string& name, float value) const {
 	int loc = get_uniform_location_(name);
 	if (loc == -1) return;

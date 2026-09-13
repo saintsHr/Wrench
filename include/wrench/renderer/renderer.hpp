@@ -24,8 +24,10 @@ SOFTWARE.
 
 #pragma once
 
+#include "wrench/renderer/shader.hpp"
 #include "wrench/scene/scene.hpp"
 #include "wrench/window/window.hpp"
+#include <memory>
 
 namespace Wrench::Renderer {
 
@@ -41,7 +43,7 @@ public:
 protected:
 	
 private:
-	
+	std::unique_ptr<Shader> default_shader_ = nullptr;
 };
 
 }
