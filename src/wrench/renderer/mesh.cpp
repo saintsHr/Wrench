@@ -2,7 +2,7 @@
 #include "wrench/utils/log.hpp"
 #include <glad.h>
 
-namespace Wrench {
+namespace Wrench::Renderer {
 
 Mesh::Mesh(
 	const std::vector<Vertex>& vertices,

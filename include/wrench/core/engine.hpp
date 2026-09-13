@@ -38,19 +38,22 @@ public:
 
 	void run(Application& app);
 
-	Window& window(void);
-	const Window& window(void) const;
+	Window::Window& window(void);
+	const Window::Window& window(void) const;
 
-	Renderer& renderer(void);
-	const Renderer& renderer(void) const;
+	Renderer::Renderer& renderer(void);
+	const Renderer::Renderer& renderer(void) const;
 
 	Logger& logger(void);
 	const Logger& logger(void) const;
+	
+protected:
+
 private:
 	bool running_ = false;
 
-	Window window_;
-	Renderer renderer_;
+	Window::Window window_;
+	Renderer::Renderer renderer_;
 	Logger logger_;
 };
 

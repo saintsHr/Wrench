@@ -24,16 +24,24 @@ SOFTWARE.
 
 #pragma once
 
+#include "wrench/scene/scene.hpp"
 #include "wrench/window/window.hpp"
 
-namespace Wrench {
+namespace Wrench::Renderer {
 
 class Renderer {
 public:
-	void init(Window& window);
+	void init(Window::Window& window);
 
 	void beginFrame(void);
 	void endFrame(void);
+
+	void renderScene(Scene::Scene& scene);
+
+protected:
+	
+private:
+	
 };
 
 }

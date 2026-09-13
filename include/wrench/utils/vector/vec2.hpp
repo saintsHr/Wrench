@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <cmath>
 
-namespace Wrench {
+namespace Wrench::Math {
 
 class Vec2 {
 public:
@@ -117,6 +117,11 @@ public:
 	}
 
 	float x, y;
+
+protected:
+	
+private:
+	
 };
 
 }

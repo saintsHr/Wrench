@@ -113,6 +113,9 @@ public:
 	        Vec3(0,1,0)
 	    );
 	}
+
+protected:
+	
 private:
 
 };

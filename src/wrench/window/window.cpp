@@ -26,7 +26,7 @@ SOFTWARE.
 #include "wrench/utils/log.hpp"
 #include <GLFW/glfw3.h>
 
-namespace Wrench {
+namespace Wrench::Window {
 
 Window::~Window() {
 	if (raw_ == nullptr) return;
@@ -164,7 +164,7 @@ void Window::setTitle(const std::string& title) {
 	}
 }
 
-void Window::setSize(Vec2 size) {
+void Window::setSize(Math::Vec2 size) {
 	Log(
 		LogLevel::Debug,
 		LogCategory::Window,
@@ -194,7 +194,7 @@ const std::string& Window::getTitle(void) const {
 	return title_;
 }
 
-Vec2 Window::getSize(void) const {
+Math::Vec2 Window::getSize(void) const {
 	return size_;
 }
 

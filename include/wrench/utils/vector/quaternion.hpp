@@ -188,6 +188,9 @@ public:
 	}
 
 	float x, y, z, w;
+
+protected:
+	
 private:
 
 };

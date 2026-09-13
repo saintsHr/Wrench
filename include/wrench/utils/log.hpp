@@ -42,6 +42,9 @@ public:
 			)
 		);
 	}
+
+protected:
+	
 private:
 	using Clock = std::chrono::steady_clock;
 

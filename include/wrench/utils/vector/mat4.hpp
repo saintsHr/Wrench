@@ -28,7 +28,7 @@ SOFTWARE.
 #include "wrench/utils/vector/math.hpp"
 #include <cmath>
 
-namespace Wrench {
+namespace Wrench::Math {
 
 class Mat4 {
 public:
@@ -183,6 +183,9 @@ public:
 	const float* data() const {
 		return &m_[0][0];
 	}
+
+protected:
+	
 private:
 	float m_[4][4];
 };

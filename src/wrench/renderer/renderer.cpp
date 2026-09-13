@@ -23,6 +23,8 @@ SOFTWARE.
 */
 
 #include "wrench/renderer/renderer.hpp"
+#include "wrench/scene/camera.hpp"
+#include "wrench/scene/drawable.hpp"
 #include "wrench/utils/log.hpp"
 #include "wrench/window/window.hpp"
 #include <glad.h>
@@ -46,9 +48,9 @@ static void framebuffer_size_callback(
 	);
 }
 
-namespace Wrench {
+namespace Wrench::Renderer {
 
-void Renderer::init(Window& window) {
+void Renderer::init(Window::Window& window) {
 	Log(
 		LogLevel::Info,
 		LogCategory::Renderer,
@@ -139,6 +141,44 @@ void Renderer::beginFrame(void) {
 
 void Renderer::endFrame(void) {
 
+}
+
+void Renderer::renderScene(Scene::Scene& scene) {
+	if (!scene.activeCamera) {
+		Log(
+			LogLevel::Warning,
+			LogCategory::Renderer,
+			"Cannot render scene: no active camera set."
+		);
+		return;
+	}
+
+
+	Math::Mat4 view = scene.activeCamera->getViewMatrix();
+	Math::Mat4 projection = scene.activeCamera->getProjectionMatrix();
+
+	auto drawables = scene.findNodesByType<Scene::DrawableNode>();
+
+	for (auto* drawable : drawables) {
+		if (!drawable->mesh || !drawable->shader) {
+			Log(
+				LogLevel::Warning,
+				LogCategory::Renderer,
+				"Skipping drawable node '{}': invalid material.",
+				drawable->name.empty() ? "(unnamed)" : drawable->name
+			);
+			continue;
+		}
+
+		Math::Mat4 model = drawable->getWorldMatrix();
+
+		drawable->shader->use();
+		drawable->shader->setUniformMat4("model", model);
+		drawable->shader->setUniformMat4("view", view);
+		drawable->shader->setUniformMat4("projection", projection);
+
+		drawable->mesh->draw();
+	}
 }
 
 }

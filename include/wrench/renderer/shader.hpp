@@ -30,7 +30,7 @@ SOFTWARE.
 #include <string>
 #include <unordered_map>
 
-namespace Wrench {
+namespace Wrench::Renderer {
 
 class Shader {
 public:
@@ -44,11 +44,14 @@ public:
 
 	void use(void);
 
-	void setUniformVec2(const std::string& name, const Vec2& value) const;
-	void setUniformVec3(const std::string& name, const Vec3& value) const;
-	void setUniformMat4(const std::string& name, const Mat4& value) const;
+	void setUniformVec2(const std::string& name, const Math::Vec2& value) const;
+	void setUniformVec3(const std::string& name, const Math::Vec3& value) const;
+	void setUniformMat4(const std::string& name, const Math::Mat4& value) const;
 	void setUniformFloat(const std::string& name, float value) const;
 	void setUniformInt(const std::string& name, int value) const;
+
+protected:
+	
 private:
 	int get_uniform_location_(const std::string& name) const;
 

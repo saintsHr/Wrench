@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <cmath>
 
-namespace Wrench {
+namespace Wrench::Math {
 
 class Vec3 {
 public:
@@ -133,11 +133,11 @@ public:
 	Vec3 cross(const Vec3& other) const {
 	    Vec3 result;
 
-		result.x = other.z - z * other.y,
-		result.y = other.x - x * other.z,
-		result.z = other.y - y * other.x;
+	    result.x = y * other.z - z * other.y;
+	    result.y = z * other.x - x * other.z;
+	    result.z = x * other.y - y * other.x;
 
-		return result;
+	    return result;
 	}
 
 	static float dot(const Vec3& a, const Vec3& b) {
@@ -145,6 +145,11 @@ public:
 	}
 
 	float x, y, z;
+
+protected:
+
+private:
+	
 };
 
 }

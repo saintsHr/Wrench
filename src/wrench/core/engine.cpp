@@ -173,19 +173,19 @@ Engine::~Engine() {
 	);
 }
 
-Window& Engine::window(void) {
+Window::Window& Engine::window(void) {
 	return window_;
 }
 
-const Window& Engine::window(void) const {
+const Window::Window& Engine::window(void) const {
 	return window_;
 }
 
-Renderer& Engine::renderer(void) {
+Renderer::Renderer& Engine::renderer(void) {
 	return renderer_;
 }
 
-const Renderer& Engine::renderer(void) const {
+const Renderer::Renderer& Engine::renderer(void) const {
 	return renderer_;
 }
 

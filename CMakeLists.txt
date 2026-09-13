@@ -35,6 +35,10 @@ add_library(Wrench STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/renderer/shader.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/renderer/mesh.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/scene/camera.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/scene/drawable.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/scene/scene.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/timer.cpp
 

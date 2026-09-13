@@ -13,6 +13,9 @@ public:
 	void Reset();
 	uint64_t ElapsedSeconds() const;
 	uint64_t ElapsedMilliseconds() const;
+
+protected:
+	
 private:
 	Clock::time_point start_time_;
 };

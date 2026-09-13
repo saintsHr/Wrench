@@ -4,12 +4,12 @@
 #include "wrench/utils/vector/vec2.hpp"
 #include <vector>
 
-namespace Wrench {
+namespace Wrench::Renderer {
 
 struct Vertex {
-	Wrench::Vec3 position;
-	Wrench::Vec3 normal;
-	Wrench::Vec2 uv;
+	Math::Vec3 position;
+	Math::Vec3 normal;
+	Math::Vec2 uv;
 };
 
 class Mesh {
@@ -31,6 +31,9 @@ public:
 	);
 
 	void draw();
+
+protected:
+	
 private:
 	unsigned int indexCount_ = 0;
 
