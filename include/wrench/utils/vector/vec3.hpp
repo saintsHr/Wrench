@@ -26,12 +26,12 @@ SOFTWARE.
 
 #include <cmath>
 
-namespace Wrench::Math {
+namespace Wrench {
 
 class Vec3 {
 public:
 	Vec3(float x_ = 0.0f, float y_ = 0.0f, float z_ = 0.0f) : x(x_), y(y_), z(z_) {};
-	
+
 	Vec3 operator+(const Vec3& other) const {
 		Vec3 result;
 
@@ -149,7 +149,7 @@ public:
 protected:
 
 private:
-	
+
 };
 
 }

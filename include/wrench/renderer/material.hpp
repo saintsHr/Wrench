@@ -24,7 +24,7 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/renderer/color.hpp"
+#include "wrench/utils/color.hpp"
 
 namespace Wrench::Renderer {
 

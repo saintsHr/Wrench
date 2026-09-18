@@ -214,8 +214,8 @@ void Renderer::renderScene(Scene::Scene& scene) {
 		return;
 	}
 
-	Math::Mat4 view = scene.activeCamera->getViewMatrix();
-	Math::Mat4 projection = scene.activeCamera->getProjectionMatrix();
+	Mat4 view = scene.activeCamera->getViewMatrix();
+	Mat4 projection = scene.activeCamera->getProjectionMatrix();
 
 	auto drawables = scene.findNodesByType<Scene::DrawableNode>();
 
@@ -230,7 +230,7 @@ void Renderer::renderScene(Scene::Scene& scene) {
 			continue;
 		}
 
-		Math::Mat4 model = drawable->getWorldMatrix();
+		Mat4 model = drawable->getWorldMatrix();
 
 		Color albedo = drawable->material.albedo;
 

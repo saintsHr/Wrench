@@ -31,7 +31,7 @@ struct GLFWwindow;
 
 namespace Wrench::Window {
 
-inline const Math::Vec2 DEFAULT_WINDOW_SIZE(800, 600);
+inline const Vec2 DEFAULT_WINDOW_SIZE(800, 600);
 inline const std::string DEFAULT_WINDOW_TITLE("Untitled Window");
 
 class Window {
@@ -45,10 +45,10 @@ public:
 	void create(void);
 
 	void setTitle(const std::string& title);
-	void setSize(Math::Vec2 size);
+	void setSize(Vec2 size);
 
 	const std::string& getTitle(void) const;
-	Math::Vec2 getSize(void) const;
+	Vec2 getSize(void) const;
 
 	bool shouldClose(void) const;
 
@@ -60,11 +60,11 @@ public:
 	GLFWwindow* nativeHandle(void) const;
 
 protected:
-	
+
 private:
 	GLFWwindow* raw_ = nullptr;
 	std::string title_ = "Untitled Window";
-	Math::Vec2 size_ = {0, 0};
+	Vec2 size_ = {0, 0};
 };
 
 }

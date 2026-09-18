@@ -84,35 +84,34 @@ void Node::collect_children_by_name(Node* node, const std::string& childName, st
 	}
 }
 
-Math::Mat4 Node::getWorldMatrix() const {
+Mat4 Node::getWorldMatrix() const {
 	if (parent) return parent->getWorldMatrix() * transform.toMat4();
 	return transform.toMat4();
 }
-
-Math::Vec3 Node::getWorldPosition() const {
-	Math::Mat4 m = getWorldMatrix();
-	return Math::Vec3(m(3, 0), m(3, 1), m(3, 2));
+Vec3 Node::getWorldPosition() const {
+	Mat4 m = getWorldMatrix();
+	return Vec3(m(3, 0), m(3, 1), m(3, 2));
 }
 
-Math::Vec3 Node::getWorldScale() const {
-	Math::Mat4 m = getWorldMatrix();
+Vec3 Node::getWorldScale() const {
+	Mat4 m = getWorldMatrix();
 
-	Math::Vec3 col0(m(0, 0), m(0, 1), m(0, 2));
-	Math::Vec3 col1(m(1, 0), m(1, 1), m(1, 2));
-	Math::Vec3 col2(m(2, 0), m(2, 1), m(2, 2));
+	Vec3 col0(m(0, 0), m(0, 1), m(0, 2));
+	Vec3 col1(m(1, 0), m(1, 1), m(1, 2));
+	Vec3 col2(m(2, 0), m(2, 1), m(2, 2));
 
-	return Math::Vec3(col0.length(), col1.length(), col2.length());
+	return Vec3(col0.length(), col1.length(), col2.length());
 }
 
-Math::Quaternion Node::getWorldRotation() const {
-	Math::Mat4 m = getWorldMatrix();
-	Math::Vec3 scale = getWorldScale();
+Quaternion Node::getWorldRotation() const {
+	Mat4 m = getWorldMatrix();
+	Vec3 scale = getWorldScale();
 
 	float m00 = m(0,0) / scale.x, m01 = m(1,0) / scale.y, m02 = m(2,0) / scale.z;
 	float m10 = m(0,1) / scale.x, m11 = m(1,1) / scale.y, m12 = m(2,1) / scale.z;
 	float m20 = m(0,2) / scale.x, m21 = m(1,2) / scale.y, m22 = m(2,2) / scale.z;
 
-	Math::Quaternion q;
+	Quaternion q;
 	float trace = m00 + m11 + m22;
 
 	if (trace > 0) {

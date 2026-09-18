@@ -31,9 +31,9 @@ SOFTWARE.
 namespace Wrench::Renderer {
 
 struct Vertex {
-	Math::Vec3 position;
-	Math::Vec3 normal;
-	Math::Vec2 uv;
+	Vec3 position;
+	Vec3 normal;
+	Vec2 uv;
 };
 
 struct MeshData {

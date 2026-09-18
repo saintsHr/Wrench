@@ -281,7 +281,7 @@ MeshData Sphere(unsigned int widthSegments, unsigned int heightSegments) {
 			float x = xy * std::cos(sectorAngle);
 			float z = xy * std::sin(sectorAngle);
 
-			Math::Vec3 normal(x / radius, y / radius, z / radius);
+			Vec3 normal(x / radius, y / radius, z / radius);
 			float u = static_cast<float>(j) / static_cast<float>(widthSegments);
 			float v = static_cast<float>(i) / static_cast<float>(heightSegments);
 
@@ -323,9 +323,9 @@ MeshData Cone(unsigned int radialSegments) {
 		float z = std::sin(angle);
 		float u = static_cast<float>(j) / static_cast<float>(radialSegments);
 
-		Math::Vec3 normal(x, radius / height, z);
+		Vec3 normal(x, radius / height, z);
 		float len = std::sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
-		normal = Math::Vec3(normal.x / len, normal.y / len, normal.z / len);
+		normal = Vec3(normal.x / len, normal.y / len, normal.z / len);
 
 		data.vertices.push_back(Vertex({x * radius, -halfHeight, z * radius}, normal, {u, 0.0f}));
 	}
@@ -335,9 +335,9 @@ MeshData Cone(unsigned int radialSegments) {
 		float x = std::cos(angle);
 		float z = std::sin(angle);
 
-		Math::Vec3 normal(x, radius / height, z);
+		Vec3 normal(x, radius / height, z);
 		float len = std::sqrt(normal.x * normal.x + normal.y * normal.y + normal.z * normal.z);
-		normal = Math::Vec3(normal.x / len, normal.y / len, normal.z / len);
+		normal = Vec3(normal.x / len, normal.y / len, normal.z / len);
 
 		float u = static_cast<float>(j) / static_cast<float>(radialSegments);
 		data.vertices.push_back(Vertex({0.0f, halfHeight, 0.0f}, normal, {u, 1.0f}));

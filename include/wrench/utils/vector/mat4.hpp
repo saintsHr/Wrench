@@ -28,7 +28,7 @@ SOFTWARE.
 #include "wrench/utils/vector/math.hpp"
 #include <cmath>
 
-namespace Wrench::Math {
+namespace Wrench {
 
 class Mat4 {
 public:
@@ -185,7 +185,7 @@ public:
 	}
 
 protected:
-	
+
 private:
 	float m_[4][4];
 };

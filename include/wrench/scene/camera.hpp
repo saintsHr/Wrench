@@ -36,8 +36,8 @@ public:
 		Wrench::Window::DEFAULT_WINDOW_SIZE.x /
 		Wrench::Window::DEFAULT_WINDOW_SIZE.y;
 
-	Math::Mat4 getViewMatrix() const;
-	Math::Mat4 getProjectionMatrix() const;
+	Mat4 getViewMatrix() const;
+	Mat4 getProjectionMatrix() const;
 
 protected:
 

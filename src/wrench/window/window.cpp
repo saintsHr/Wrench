@@ -39,7 +39,7 @@ static void window_size_callback(
     );
 
     if (self) self->setSize(
-        Wrench::Math::Vec2(
+        Wrench::Vec2(
         	static_cast<float>(width),
         	static_cast<float>(height)
         )
@@ -191,7 +191,7 @@ void Window::setTitle(const std::string& title) {
 	}
 }
 
-void Window::setSize(Math::Vec2 size) {
+void Window::setSize(Vec2 size) {
 	size_ = size;
 
 	if (raw_ != nullptr) {
@@ -221,7 +221,7 @@ const std::string& Window::getTitle(void) const {
 	return title_;
 }
 
-Math::Vec2 Window::getSize(void) const {
+Vec2 Window::getSize(void) const {
 	return size_;
 }
 

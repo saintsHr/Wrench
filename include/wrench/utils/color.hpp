@@ -24,11 +24,11 @@ SOFTWARE.
 
 #pragma once
 
-namespace Wrench::Renderer {
+namespace Wrench {
 
 class Color {
 public:
-	Color(
+	constexpr Color(
 		float r_ = 1.0f,
 		float g_ = 1.0f,
 		float b_ = 1.0f
@@ -40,5 +40,25 @@ protected:
 private:
 
 };
+
+}
+
+namespace Wrench::Colors {
+
+constexpr Color White     = {1.0f,  1.0f,  1.0f };
+constexpr Color Black     = {0.0f,  0.0f,  0.0f };
+constexpr Color Gray      = {0.5f,  0.5f,  0.5f };
+constexpr Color LightGray = {0.75f, 0.75f, 0.75f};
+constexpr Color DarkGray  = {0.25f, 0.25f, 0.25f};
+constexpr Color Red       = {1.0f,  0.0f,  0.0f };
+constexpr Color Green     = {0.0f,  1.0f,  0.0f };
+constexpr Color Blue      = {0.0f,  0.0f,  1.0f };
+constexpr Color Yellow    = {1.0f,  1.0f,  0.0f };
+constexpr Color Cyan      = {0.0f,  1.0f,  1.0f };
+constexpr Color Magenta   = {1.0f,  0.0f,  1.0f };
+constexpr Color Orange    = {1.0f,  0.5f,  0.0f };
+constexpr Color Purple    = {0.5f,  0.0f,  0.5f };
+constexpr Color Pink      = {1.0f,  0.4f,  0.7f };
+constexpr Color Brown     = {0.4f,  0.26f, 0.13f};
 
 }

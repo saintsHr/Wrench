@@ -35,7 +35,7 @@ class CameraNode;
 
 class Node {
 public:
-	Math::Transform transform;
+	Transform transform;
 	std::string name;
 
 	std::vector<std::unique_ptr<Node>> children;
@@ -43,10 +43,10 @@ public:
 
 	virtual ~Node() = default;
 
-	Math::Mat4 getWorldMatrix() const;
-	Math::Vec3 getWorldPosition() const;
-	Math::Vec3 getWorldScale() const;
-	Math::Quaternion getWorldRotation() const;
+	Mat4 getWorldMatrix() const;
+	Vec3 getWorldPosition() const;
+	Vec3 getWorldScale() const;
+	Quaternion getWorldRotation() const;
 
 	template<typename T>
 	T* addChild(std::unique_ptr<T> child) {

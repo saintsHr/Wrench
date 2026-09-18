@@ -28,7 +28,7 @@ SOFTWARE.
 #include "wrench/utils/vector/math.hpp"
 #include "wrench/utils/vector/vec3.hpp"
 #include <cmath>
-namespace Wrench::Math {
+namespace Wrench {
 
 class Quaternion {
 public:
@@ -190,7 +190,7 @@ public:
 	float x, y, z, w;
 
 protected:
-	
+
 private:
 
 };

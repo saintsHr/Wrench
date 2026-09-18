@@ -27,7 +27,7 @@ SOFTWARE.
 #include "wrench/utils/vector/quaternion.hpp"
 #include <wrench/utils/vector/mat4.hpp>
 
-namespace Wrench::Math {
+namespace Wrench {
 
 class Transform {
 public:
@@ -57,7 +57,7 @@ public:
 	        Quaternion::fromAxisAngle(Vec3(0,1,0), deltaRotation.y) *
 	        Quaternion::fromAxisAngle(Vec3(0,0,1), deltaRotation.z)
 	    );
-	    
+
 	    rotation = rotation * delta;
 	}
 
@@ -115,7 +115,7 @@ public:
 	}
 
 protected:
-	
+
 private:
 
 };

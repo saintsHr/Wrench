@@ -26,7 +26,7 @@ SOFTWARE.
 
 #include <cmath>
 
-namespace Wrench::Math {
+namespace Wrench {
 
 class Vec2 {
 public:
@@ -103,7 +103,7 @@ public:
 
 	Vec2 normalize() const {
 		Vec2 result;
-		
+
 		float len = length();
 
 		result.x = x / len;
@@ -119,9 +119,9 @@ public:
 	float x, y;
 
 protected:
-	
+
 private:
-	
+
 };
 
 }

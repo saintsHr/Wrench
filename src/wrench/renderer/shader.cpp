@@ -75,7 +75,7 @@ Shader::Shader(const std::string& vertexSource, const std::string& fragmentSourc
 	int success_vertex = true;
 	int success_fragment = true;
 	int success_link = true;
-	
+
 	std::string log_vertex = "";
 	std::string log_fragment = "";
 	std::string log_shader = "";
@@ -297,19 +297,19 @@ void Shader::use(void) {
 	glUseProgram(this->program_);
 }
 
-void Shader::setUniformVec2(const std::string& name, const Math::Vec2& value) const {
+void Shader::setUniformVec2(const std::string& name, const Vec2& value) const {
 	int loc = get_uniform_location_(name);
 	if (loc == -1) return;
 	glProgramUniform2f(program_, loc, value.x, value.y);
 }
 
-void Shader::setUniformVec3(const std::string& name, const Math::Vec3& value) const {
+void Shader::setUniformVec3(const std::string& name, const Vec3& value) const {
 	int loc = get_uniform_location_(name);
 	if (loc == -1) return;
 	glProgramUniform3f(program_, loc, value.x, value.y, value.z);
 }
 
-void Shader::setUniformMat4(const std::string& name, const Math::Mat4& value) const {
+void Shader::setUniformMat4(const std::string& name, const Mat4& value) const {
 	int loc = get_uniform_location_(name);
 	if (loc == -1) return;
 	glProgramUniformMatrix4fv(program_, loc, 1, GL_FALSE, value.data());

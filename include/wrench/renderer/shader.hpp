@@ -24,11 +24,10 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/renderer/color.hpp"
-#include "wrench/renderer/color.hpp"
 #include "wrench/utils/vector/vec3.hpp"
 #include "wrench/utils/vector/vec2.hpp"
 #include "wrench/utils/vector/mat4.hpp"
+#include "wrench/utils/color.hpp"
 #include <string>
 #include <unordered_map>
 
@@ -46,15 +45,15 @@ public:
 
 	void use(void);
 
-	void setUniformVec2(const std::string& name, const Math::Vec2& value) const;
-	void setUniformVec3(const std::string& name, const Math::Vec3& value) const;
-	void setUniformMat4(const std::string& name, const Math::Mat4& value) const;
+	void setUniformVec2(const std::string& name, const Vec2& value) const;
+	void setUniformVec3(const std::string& name, const Vec3& value) const;
+	void setUniformMat4(const std::string& name, const Mat4& value) const;
 	void setUniformColor(const std::string& name, const Color& value) const;
 	void setUniformFloat(const std::string& name, float value) const;
 	void setUniformInt(const std::string& name, int value) const;
 
 protected:
-	
+
 private:
 	int get_uniform_location_(const std::string& name) const;
 
