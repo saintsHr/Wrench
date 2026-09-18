@@ -109,9 +109,11 @@ void Engine::run(Application& app) {
 	running_ = true;
 
 	while (running_) {
+	    float dt = dt_timer_.Tick();
+
 		window_.pollEvents();
 
-		app.onUpdate();
+		app.onUpdate(dt);
 
 		renderer_.beginFrame();
 		app.onRender();

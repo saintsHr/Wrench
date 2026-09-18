@@ -27,6 +27,7 @@ SOFTWARE.
 #include "wrench/core/application.hpp"
 #include "wrench/renderer/renderer.hpp"
 #include "wrench/utils/log.hpp"
+#include "wrench/utils/timer.hpp"
 #include "wrench/window/window.hpp"
 
 namespace Wrench {
@@ -46,11 +47,13 @@ public:
 
 	Logger& logger(void);
 	const Logger& logger(void) const;
-	
+
 protected:
 
 private:
 	bool running_ = false;
+
+	Timer dt_timer_;
 
 	Window::Window window_;
 	Renderer::Renderer renderer_;

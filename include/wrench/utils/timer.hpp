@@ -11,11 +11,15 @@ public:
 	Timer();
 
 	void Reset();
-	uint64_t ElapsedSeconds() const;
-	uint64_t ElapsedMilliseconds() const;
+
+	float Tick();
+
+	float ElapsedSeconds() const;
+	float ElapsedMilliseconds() const;
+	float ElapsedMicroseconds() const;
 
 protected:
-	
+
 private:
 	Clock::time_point start_time_;
 };

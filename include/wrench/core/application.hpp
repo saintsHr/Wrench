@@ -36,7 +36,7 @@ public:
     virtual ~Application() = default;
 
     virtual void onInitialize() {}
-    virtual void onUpdate() {}
+    virtual void onUpdate([[maybe_unused]] float dt) {}
     virtual void onRender() {}
     virtual void onShutdown() {}
 

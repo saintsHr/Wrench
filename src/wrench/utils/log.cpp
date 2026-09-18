@@ -1,9 +1,9 @@
-#include <cstdint>
 #include <cstdlib>
 #include <iomanip>
 #include <ostream>
 #include <sstream>
 #include <iostream>
+#include <cmath>
 
 #include "wrench/utils/log.hpp"
 
@@ -12,26 +12,27 @@ namespace Wrench {
 Logger* gLogger = nullptr;
 
 std::string Logger::get_timestamp_() const {
-	uint64_t ms = timer_.ElapsedMilliseconds();
+    float total_ms = timer_.ElapsedMilliseconds();
 
-	uint64_t sec = ms / 1000;
-	uint64_t min = sec / 60;
-	uint64_t hrs = min / 60;
+    int hrs = static_cast<int>(total_ms / 3600000);
+    total_ms = std::fmod(total_ms, 3600000.0f);
 
-	ms %= 1000;
-	sec %= 60;
-	min %= 60;
+    int min = static_cast<int>(total_ms / 60000);
+    total_ms = std::fmod(total_ms, 60000.0f);
 
-	std::ostringstream stream;
+    int sec = static_cast<int>(total_ms / 1000);
+    int ms = static_cast<int>(std::fmod(total_ms, 1000.0f));
 
-	stream
-		<< std::setfill('0')
-		<< std::setw(2) << hrs << ":"
-		<< std::setw(2) << min << ":"
-		<< std::setw(2) << sec << "."
-		<< std::setw(3) << ms;
+    std::ostringstream stream;
 
-	return stream.str();
+    stream
+        << std::setfill('0')
+        << std::setw(2) << hrs << ":"
+        << std::setw(2) << min << ":"
+        << std::setw(2) << sec << "."
+        << std::setw(3) << ms;
+
+    return stream.str();
 }
 
 const char* Logger::level_to_string_(LogLevel level) const {
