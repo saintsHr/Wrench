@@ -34,18 +34,25 @@ public:
 
 	Vec3 operator+(const Vec3& other) const;
 	Vec3 operator-(const Vec3& other) const;
-	Vec3 operator-() const;
 	Vec3 operator*(const Vec3& other) const;
 	Vec3 operator/(const Vec3& other) const;
+
+	Vec3& operator+=(const Vec3& other);
+	Vec3& operator-=(const Vec3& other);
+	Vec3& operator*=(const Vec3& other);
+	Vec3& operator/=(const Vec3& other);
+
+	Vec3 operator-() const;
 	Vec3 operator*(float scalar) const;
 	Vec3 operator/(float scalar) const;
+
 	friend Vec3 operator*(float scalar, const Vec3& v);
 	friend Vec3 operator/(float scalar, const Vec3& v);
 
 	float length() const;
 	Vec3 normalize() const;
-	static Vec3 cross(const Vec3& a, const Vec3& b);
 	Vec3 cross(const Vec3& other) const;
+	static Vec3 cross(const Vec3& a, const Vec3& b);
 	static float dot(const Vec3& a, const Vec3& b);
 
 	Vec2 toVec2() const;

@@ -75,6 +75,34 @@ Vec2 Vec2::operator/(const Vec2& other) const {
 	return result;
 }
 
+Vec2& Vec2::operator+=(const Vec2& other) {
+    x += other.x;
+    y += other.y;
+
+    return *this;
+}
+
+Vec2& Vec2::operator-=(const Vec2& other) {
+    x -= other.x;
+    y -= other.y;
+
+    return *this;
+}
+
+Vec2& Vec2::operator*=(const Vec2& other) {
+    x *= other.x;
+    y *= other.y;
+
+    return *this;
+}
+
+Vec2& Vec2::operator/=(const Vec2& other) {
+    x /= other.x;
+    y /= other.y;
+
+    return *this;
+}
+
 Vec2 Vec2::operator*(float scalar) const {
     Vec2 result;
 

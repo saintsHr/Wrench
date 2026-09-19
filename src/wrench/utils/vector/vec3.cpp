@@ -72,6 +72,38 @@ Vec3 Vec3::operator/(const Vec3& other) const {
 	return result;
 }
 
+Vec3& Vec3::operator+=(const Vec3& other) {
+    x += other.x;
+    y += other.y;
+    z += other.z;
+
+    return *this;
+}
+
+Vec3& Vec3::operator-=(const Vec3& other) {
+    x -= other.x;
+    y -= other.y;
+    z -= other.z;
+
+    return *this;
+}
+
+Vec3& Vec3::operator*=(const Vec3& other) {
+    x *= other.x;
+    y *= other.y;
+    z *= other.z;
+
+    return *this;
+}
+
+Vec3& Vec3::operator/=(const Vec3& other) {
+    x /= other.x;
+    y /= other.y;
+    z /= other.z;
+
+    return *this;
+}
+
 Vec3 Vec3::operator*(float scalar) const {
     Vec3 result;
 

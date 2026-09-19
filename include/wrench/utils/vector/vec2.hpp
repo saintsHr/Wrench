@@ -34,11 +34,18 @@ public:
 
 	Vec2 operator+(const Vec2& other) const;
 	Vec2 operator-(const Vec2& other) const;
-	Vec2 operator-() const;
 	Vec2 operator*(const Vec2& other) const;
 	Vec2 operator/(const Vec2& other) const;
+
+	Vec2& operator+=(const Vec2& other);
+	Vec2& operator-=(const Vec2& other);
+	Vec2& operator*=(const Vec2& other);
+	Vec2& operator/=(const Vec2& other);
+
+	Vec2 operator-() const;
 	Vec2 operator*(float scalar) const;
 	Vec2 operator/(float scalar) const;
+
 	friend Vec2 operator*(float scalar, const Vec2& v);
 	friend Vec2 operator/(float scalar, const Vec2& v);
 
