@@ -26,6 +26,7 @@ SOFTWARE.
 #include "wrench/utils/log.hpp"
 #include "wrench/utils/vector/math.hpp"
 #include <glad.h>
+#include <cmath>
 
 namespace Wrench::Renderer {
 

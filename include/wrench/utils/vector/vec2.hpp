@@ -24,101 +24,29 @@ SOFTWARE.
 
 #pragma once
 
-#include <cmath>
-
 namespace Wrench {
+
+class Vec3;
 
 class Vec2 {
 public:
 	Vec2(float x_ = 0.0f, float y_ = 0.0f) : x(x_), y(y_) {};
 
-	float length() const {
-		return std::sqrt(
-			(x * x) +
-			(y * y)
-		);
-	}
+	Vec2 operator+(const Vec2& other) const;
+	Vec2 operator-(const Vec2& other) const;
+	Vec2 operator-() const;
+	Vec2 operator*(const Vec2& other) const;
+	Vec2 operator/(const Vec2& other) const;
+	Vec2 operator*(float scalar) const;
+	Vec2 operator/(float scalar) const;
+	friend Vec2 operator*(float scalar, const Vec2& v);
+	friend Vec2 operator/(float scalar, const Vec2& v);
 
-	Vec2 operator+(const Vec2& other) const {
-		Vec2 result;
+	Vec2 normalize() const;
+	float length() const;
+	static float dot(const Vec2& a, const Vec2& b);
 
-		result.x = x + other.x;
-		result.y = y + other.y;
-
-		return result;
-	}
-
-	Vec2 operator-(const Vec2& other) const {
-		Vec2 result;
-
-		result.x = x - other.x;
-		result.y = y - other.y;
-
-		return result;
-	}
-
-	Vec2 operator-() const {
-        return Vec2(-x, -y);
-	}
-
-	Vec2 operator*(const Vec2& other) const {
-		Vec2 result;
-
-		result.x = x * other.x;
-		result.y = y * other.y;
-
-		return result;
-	}
-
-	Vec2 operator/(const Vec2& other) const {
-		Vec2 result;
-
-		result.x = x / other.x;
-		result.y = y / other.y;
-
-		return result;
-	}
-
-	Vec2 operator*(float scalar) const {
-	    Vec2 result;
-
-	    result.x = x * scalar;
-		result.y = y * scalar;
-
-	    return result;
-	}
-
-	Vec2 operator/(float scalar) const {
-	    Vec2 result;
-
-	    result.x = x / scalar;
-		result.y = y / scalar;
-
-	    return result;
-	}
-
-	friend Vec2 operator*(float scalar, const Vec2& v) {
-	    return v * scalar;
-	}
-
-	friend Vec2 operator/(float scalar, const Vec2& v) {
-	    return v / scalar;
-	}
-
-	Vec2 normalize() const {
-		Vec2 result;
-
-		float len = length();
-
-		result.x = x / len;
-		result.y = y / len;
-
-		return result;
-	}
-
-	static float dot(const Vec2& a, const Vec2& b) {
-		return (a.x * b.x) + (a.y * b.y);
-	}
+	Vec3 toVec3(float z = 0.0f) const;
 
 	float x, y;
 

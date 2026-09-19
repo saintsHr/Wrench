@@ -169,6 +169,21 @@ static Wrench::Input::Key translate_key(int glfw_key) {
     }
 }
 
+static Wrench::Input::MouseButton translate_mouse_button(int glfw_button) {
+    switch (glfw_button) {
+        case GLFW_MOUSE_BUTTON_LEFT:   return Wrench::Input::MouseButton::Left;
+        case GLFW_MOUSE_BUTTON_RIGHT:  return Wrench::Input::MouseButton::Right;
+        case GLFW_MOUSE_BUTTON_MIDDLE: return Wrench::Input::MouseButton::Middle;
+        case GLFW_MOUSE_BUTTON_4:      return Wrench::Input::MouseButton::Button4;
+        case GLFW_MOUSE_BUTTON_5:      return Wrench::Input::MouseButton::Button5;
+        case GLFW_MOUSE_BUTTON_6:      return Wrench::Input::MouseButton::Button6;
+        case GLFW_MOUSE_BUTTON_7:      return Wrench::Input::MouseButton::Button7;
+        case GLFW_MOUSE_BUTTON_8:      return Wrench::Input::MouseButton::Button8;
+
+        default: return Wrench::Input::MouseButton::Unknown;
+    }
+}
+
 }
 
 namespace Wrench::Window {
@@ -402,9 +417,14 @@ void Window::mouse_button_callback_(GLFWwindow* window, int button, int action, 
     	glfwGetWindowUserPointer(window)
     ); if (!self) return;
 
-    static_cast<void>(button);
-    static_cast<void>(action);
     static_cast<void>(mods);
+
+    if(!self->mouse_) return;
+
+    Wrench::Input::MouseButton translated_button = translate_mouse_button(button);
+    bool pressed = (action != GLFW_RELEASE);
+
+    self->mouse_->on_button_event(translated_button, pressed);
 }
 
 void Window::mouse_position_callback_(GLFWwindow* window, double xpos, double ypos) {
@@ -412,8 +432,9 @@ void Window::mouse_position_callback_(GLFWwindow* window, double xpos, double yp
     	glfwGetWindowUserPointer(window)
     ); if (!self) return;
 
-    static_cast<void>(xpos);
-    static_cast<void>(ypos);
+    if(!self->mouse_) return;
+
+    self->mouse_->on_move_event(Vec2(static_cast<float>(xpos), static_cast<float>(ypos)));
 }
 
 void Window::mouse_scroll_callback_(GLFWwindow* window, double xoffset, double yoffset) {

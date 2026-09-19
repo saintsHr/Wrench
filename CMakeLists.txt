@@ -41,6 +41,8 @@ add_library(Wrench STATIC
 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/timer.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/vector/vec3.cpp
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/vector/vec2.cpp
 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/input/input.cpp
 

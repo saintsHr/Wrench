@@ -38,4 +38,24 @@ void Keyboard::on_key_event(Key key, bool pressed) {
     }
 }
 
+bool Mouse::isButtonDown(MouseButton button) const {
+    return pressed_buttons_.find(button) != pressed_buttons_.end();
+}
+
+Vec2 Mouse::getPosition() const {
+    return position_;
+}
+
+void Mouse::on_button_event(MouseButton button, bool pressed) {
+    if (pressed) {
+        pressed_buttons_.insert(button);
+    } else {
+        pressed_buttons_.erase(button);
+    }
+}
+
+void Mouse::on_move_event(Vec2 position) {
+    position_ = position;
+}
+
 }

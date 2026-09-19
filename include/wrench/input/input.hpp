@@ -70,13 +70,28 @@ enum class Key {
     KeypadSubtract, KeypadAdd, KeypadEnter, KeypadEqual
 };
 
+enum class MouseButton {
+    Left, Right, Middle,
+    Button4, Button5, Button6, Button7, Button8,
+    Unknown
+};
+
 class Mouse {
+
+friend class Wrench::Window::Window;
+
 public:
+    bool isButtonDown(MouseButton button) const;
+    Vec2 getPosition() const;
 
 protected:
 
 private:
+    void on_button_event(MouseButton button, bool pressed);
+    void on_move_event(Vec2 position);
 
+    std::unordered_set<MouseButton> pressed_buttons_;
+    Vec2 position_ = {0, 0};
 };
 
 class Keyboard {
