@@ -25,6 +25,7 @@ SOFTWARE.
 #pragma once
 
 #include "wrench/core/application.hpp"
+#include "wrench/input/input.hpp"
 #include "wrench/renderer/renderer.hpp"
 #include "wrench/utils/log.hpp"
 #include "wrench/utils/timer.hpp"
@@ -45,6 +46,12 @@ public:
 	Renderer::Renderer& renderer(void);
 	const Renderer::Renderer& renderer(void) const;
 
+	Input::Keyboard& keyboard(void);
+	const Input::Keyboard& keyboard(void) const;
+
+	Input::Mouse& mouse(void);
+	const Input::Mouse& mouse(void) const;
+
 	Logger& logger(void);
 	const Logger& logger(void) const;
 
@@ -57,6 +64,8 @@ private:
 
 	Window::Window window_;
 	Renderer::Renderer renderer_;
+	Input::Keyboard keyboard_;
+	Input::Mouse mouse_;
 	Logger logger_;
 };
 

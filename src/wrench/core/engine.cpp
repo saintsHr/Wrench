@@ -85,6 +85,9 @@ Engine::Engine() {
 		LogCategory::Core,
 		"Engine initialized."
 	);
+
+    window_.setKeyboard(&keyboard_);
+    window_.setMouse(&mouse_);
 }
 
 void Engine::run(Application& app) {
@@ -189,6 +192,22 @@ Renderer::Renderer& Engine::renderer(void) {
 
 const Renderer::Renderer& Engine::renderer(void) const {
 	return renderer_;
+}
+
+Input::Keyboard& Engine::keyboard(void) {
+    return keyboard_;
+}
+
+const Input::Keyboard& Engine::keyboard(void) const {
+    return keyboard_;
+}
+
+Input::Mouse& Engine::mouse(void) {
+    return mouse_;
+}
+
+const Input::Mouse& Engine::mouse(void) const {
+    return mouse_;
 }
 
 Logger& Engine::logger(void) {

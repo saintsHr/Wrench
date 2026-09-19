@@ -42,6 +42,8 @@ add_library(Wrench STATIC
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/log.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/utils/timer.cpp
 
+    ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/input/input.cpp
+
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/src/glad.c
 )
 
@@ -97,7 +99,7 @@ target_compile_options(Wrench PRIVATE
         -Wcast-align
         -Wcast-qual
         -Wstrict-aliasing
-        
+
         $<$<COMPILE_LANGUAGE:CXX>:
             -Wnon-virtual-dtor
             -Wold-style-cast
@@ -124,7 +126,7 @@ if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(Wrench PRIVATE
         $<$<CONFIG:Debug>:
             $<$<COMPILE_LANGUAGE:CXX>:
-                
+
             >
         >
     )
@@ -153,7 +155,7 @@ target_compile_options(Wrench PRIVATE
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_compile_options(Wrench PRIVATE
         $<$<CONFIG:Release>:
-            
+
         >
     )
 endif()
@@ -163,7 +165,7 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_compile_options(Wrench PRIVATE
         $<$<CONFIG:Release>:
-            
+
         >
     )
 endif()
@@ -176,7 +178,7 @@ endif()
 
 target_link_options(Wrench PRIVATE
     $<$<CONFIG:Debug>:
-        
+
     >
 )
 
@@ -184,7 +186,7 @@ target_link_options(Wrench PRIVATE
 
 target_link_options(Wrench PRIVATE
     $<$<CONFIG:Release>:
-        
+
     >
 )
 
@@ -193,7 +195,7 @@ target_link_options(Wrench PRIVATE
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_options(Wrench PRIVATE
         $<$<CONFIG:Debug>:
-            
+
         >
     )
 endif()
@@ -203,7 +205,7 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_link_options(Wrench PRIVATE
         $<$<CONFIG:Debug>:
-            
+
         >
     )
 endif()
@@ -214,7 +216,7 @@ endif()
 if(CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     target_link_options(Wrench PRIVATE
         $<$<CONFIG:Release>:
-            
+
         >
     )
 endif()
@@ -224,7 +226,7 @@ endif()
 if(CMAKE_CXX_COMPILER_ID MATCHES "Clang")
     target_link_options(Wrench PRIVATE
         $<$<CONFIG:Release>:
-            
+
         >
     )
 endif()

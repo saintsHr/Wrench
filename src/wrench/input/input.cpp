@@ -22,28 +22,20 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
-#include "wrench/core/engine.hpp"
-#include "wrench/core/application.hpp"
-
-#include "wrench/window/window.hpp"
-
-#include "wrench/renderer/renderer.hpp"
-#include "wrench/renderer/shader.hpp"
-#include "wrench/renderer/mesh.hpp"
-
-#include "wrench/scene/camera.hpp"
-#include "wrench/scene/scene.hpp"
-#include "wrench/scene/drawable.hpp"
-
-#include "wrench/utils/vector/math.hpp"
-#include "wrench/utils/vector/vec2.hpp"
-#include "wrench/utils/vector/vec3.hpp"
-#include "wrench/utils/vector/mat4.hpp"
-#include "wrench/utils/vector/quaternion.hpp"
-
-#include "wrench/utils/log.hpp"
-#include "wrench/utils/timer.hpp"
-
 #include "wrench/input/input.hpp"
+
+namespace Wrench::Input {
+
+bool Keyboard::isKeyDown(Key key) const {
+    return pressed_keys_.find(key) != pressed_keys_.end();
+}
+
+void Keyboard::on_key_event(Key key, bool pressed) {
+    if (pressed) {
+        pressed_keys_.insert(key);
+    } else {
+        pressed_keys_.erase(key);
+    }
+}
+
+}

@@ -29,6 +29,11 @@ SOFTWARE.
 
 struct GLFWwindow;
 
+namespace Wrench::Input {
+    class Mouse;
+    class Keyboard;
+}
+
 namespace Wrench::Window {
 
 inline const Vec2 DEFAULT_WINDOW_SIZE(800, 600);
@@ -50,6 +55,9 @@ public:
 	const std::string& getTitle(void) const;
 	Vec2 getSize(void) const;
 
+	void setMouse(Wrench::Input::Mouse* mouse);
+	void setKeyboard(Wrench::Input::Keyboard* keyboard);
+
 	bool shouldClose(void) const;
 
 	void pollEvents(void);
@@ -65,6 +73,15 @@ private:
 	GLFWwindow* raw_ = nullptr;
 	std::string title_ = "Untitled Window";
 	Vec2 size_ = {0, 0};
+
+	Wrench::Input::Keyboard* keyboard_ = nullptr;
+	Wrench::Input::Mouse* mouse_ = nullptr;
+
+	static void window_size_callback_(GLFWwindow* window, int width, int height);
+	static void key_callback_(GLFWwindow* window, int key, int scancode, int action, int mods);
+	static void mouse_button_callback_(GLFWwindow* window, int button, int action, int mods);
+	static void mouse_position_callback_(GLFWwindow* window, double xpos, double ypos);
+	static void mouse_scroll_callback_(GLFWwindow* window, double xoffset, double yoffset);
 };
 
 }
