@@ -57,6 +57,10 @@ public:
 		return result;
 	}
 
+	Vec2 operator-() const {
+        return Vec2(-x, -y);
+	}
+
 	Vec2 operator*(const Vec2& other) const {
 		Vec2 result;
 

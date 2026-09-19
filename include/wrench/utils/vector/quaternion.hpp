@@ -146,7 +146,7 @@ public:
 	}
 
 	static Quaternion lookRotation(const Vec3& forward, const Vec3& up)	{
-	    Vec3 f = forward.normalize();
+	    Vec3 f = -(forward).normalize();
 	    Vec3 r = Vec3::cross(up, f).normalize();
 	    Vec3 u = Vec3::cross(f, r);
 

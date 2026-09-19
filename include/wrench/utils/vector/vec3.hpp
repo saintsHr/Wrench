@@ -52,6 +52,10 @@ public:
 		return result;
 	}
 
+	Vec3 operator-() const {
+        return Vec3(-x, -y, -z);
+	}
+
 	Vec3 operator*(const Vec3& other) const {
 		Vec3 result;
 
