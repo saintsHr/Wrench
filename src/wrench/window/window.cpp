@@ -367,6 +367,8 @@ Vec2 Window::getSize(void) const {
 
 void Window::setKeyboard(Wrench::Input::Keyboard* keyboard) {
     keyboard_ = keyboard;
+    keyboard_->window_ = raw_;
+
     Log(
 		LogLevel::Debug,
 		LogCategory::Window,
@@ -376,6 +378,8 @@ void Window::setKeyboard(Wrench::Input::Keyboard* keyboard) {
 
 void Window::setMouse(Wrench::Input::Mouse* mouse) {
     mouse_ = mouse;
+    mouse_->window_ = raw_;
+
     Log(
 		LogLevel::Debug,
 		LogCategory::Window,

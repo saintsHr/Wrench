@@ -42,8 +42,8 @@ public:
 protected:
 
 private:
-	static constexpr float kNearPlane = 0.1f;
-	static constexpr float kFarPlane = 1000.0f;
+	static constexpr float NEAR_PLANE_ = 0.1f;
+	static constexpr float FAR_PLANE_ = 1000.0f;
 };
 
 }

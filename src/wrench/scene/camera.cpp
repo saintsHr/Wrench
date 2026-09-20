@@ -35,7 +35,7 @@ Mat4 CameraNode::getViewMatrix() const {
 }
 
 Mat4 CameraNode::getProjectionMatrix() const {
-	return Mat4::perspective(fov, aspectRatio, kNearPlane, kFarPlane);
+	return Mat4::perspective(fov, aspectRatio, NEAR_PLANE_, FAR_PLANE_);
 }
 
 }

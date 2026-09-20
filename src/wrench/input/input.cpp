@@ -23,6 +23,7 @@ SOFTWARE.
 */
 
 #include "wrench/input/input.hpp"
+#include <GLFW/glfw3.h>
 
 namespace Wrench::Input {
 
@@ -44,6 +45,30 @@ bool Mouse::isButtonDown(MouseButton button) const {
 
 Vec2 Mouse::getPosition() const {
     return position_;
+}
+
+Vec2 Mouse::getDelta() const {
+    return delta_;
+}
+
+void Mouse::update() {
+    delta_ = position_ - old_position_;
+    old_position_ = position_;
+}
+
+void Mouse::setMouseMode(MouseMode mode) {
+    switch (mode) {
+        case MouseMode::Normal: glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_NORMAL); break;
+        case MouseMode::Hidden: glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_HIDDEN); break;
+        case MouseMode::Locked: glfwSetInputMode(window_, GLFW_CURSOR, GLFW_CURSOR_DISABLED); break;
+        default: break;
+    }
+
+    mode_ = mode;
+}
+
+MouseMode Mouse::getMouseMode() const {
+    return mode_;
 }
 
 void Mouse::on_button_event(MouseButton button, bool pressed) {

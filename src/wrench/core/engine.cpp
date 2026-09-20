@@ -116,6 +116,7 @@ void Engine::run(Application& app) {
 
 		window_.pollEvents();
 
+		mouse_.update();
 		app.onUpdate(dt);
 
 		renderer_.beginFrame();
@@ -124,9 +125,7 @@ void Engine::run(Application& app) {
 
 		window_.swapBuffers();
 
-		if (window_.shouldClose()) {
-			running_ = false;
-		}
+		if (window_.shouldClose()) running_ = false;
 	}
 
 	logger_.Log(

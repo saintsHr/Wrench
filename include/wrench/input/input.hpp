@@ -31,6 +31,8 @@ namespace Wrench::Window {
     class Window;
 }
 
+class GLFWwindow;
+
 namespace Wrench::Input {
 
 enum class Key {
@@ -76,22 +78,37 @@ enum class MouseButton {
     Unknown
 };
 
+enum class MouseMode {
+    Normal, Hidden, Locked
+};
+
 class Mouse {
 
 friend class Wrench::Window::Window;
 
 public:
+    void update();
+
     bool isButtonDown(MouseButton button) const;
     Vec2 getPosition() const;
+    Vec2 getDelta() const;
 
+    void setMouseMode(MouseMode mode);
+    MouseMode getMouseMode() const;
 protected:
 
 private:
     void on_button_event(MouseButton button, bool pressed);
     void on_move_event(Vec2 position);
 
+    GLFWwindow* window_ = nullptr;
+
     std::unordered_set<MouseButton> pressed_buttons_;
+    MouseMode mode_;
+
     Vec2 position_ = {0, 0};
+    Vec2 old_position_ = {0, 0};
+    Vec2 delta_ = {0, 0};
 };
 
 class Keyboard {
@@ -105,6 +122,8 @@ protected:
 
 private:
     void on_key_event(Key key, bool pressed);
+
+    GLFWwindow* window_ = nullptr;
 
     std::unordered_set<Key> pressed_keys_;
 };
