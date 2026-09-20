@@ -206,16 +206,15 @@ void Renderer::renderScene(Scene::Scene& scene) {
 		}
 
 		Mat4 model = drawable->getWorldMatrix();
-
-		Color albedo = drawable->material.albedo;
+		Color color = drawable->material.color;
 
 		default_shader_->use();
 
-		default_shader_->setUniformMat4("model", model);
-		default_shader_->setUniformMat4("view", view);
-		default_shader_->setUniformMat4("projection", projection);
+		default_shader_->setUniformMat4("uModel", model);
+		default_shader_->setUniformMat4("uView", view);
+		default_shader_->setUniformMat4("uProjection", projection);
 
-		default_shader_->setUniformColor("albedo", albedo);
+		default_shader_->setUniformColor("uColor", color);
 
 		drawable->mesh->draw();
 	}
