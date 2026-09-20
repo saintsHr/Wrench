@@ -27,41 +27,13 @@ SOFTWARE.
 #include "wrench/scene/drawable.hpp"
 #include "wrench/utils/log.hpp"
 #include "wrench/window/window.hpp"
+#include "_embedded_shaders.hpp"
 #include <glad.h>
 #include <GL/gl.h>
 #include <GLFW/glfw3.h>
-#include <string>
 #include <sys/cdefs.h>
 
 namespace {
-
-std::string standard_vertex_shader = R"(
-	#version 460 core
-
-	layout(location = 0) in vec3 position;
-
-	uniform mat4 model;
-	uniform mat4 view;
-	uniform mat4 projection;
-
-	void main() {
-	    gl_Position = projection * view * model * vec4(position, 1.0);
-	}
-)";
-
-std::string standard_fragment_shader = R"(
-	#version 460 core
-
-	out vec4 fragColor;
-
-	uniform vec3 albedo;
-
-	void main() {
-	    fragColor = vec4(albedo, 1.0);
-	}
-)";
-
-}
 
 static void framebuffer_size_callback(
 	GLFWwindow* window,
@@ -77,6 +49,8 @@ static void framebuffer_size_callback(
 		width,
 		height
 	);
+}
+
 }
 
 namespace Wrench::Renderer {
@@ -173,7 +147,8 @@ void Renderer::init(Window::Window& window) {
 	);
 
 	default_shader_ = std::make_unique<Shader>(
-		standard_vertex_shader, standard_fragment_shader
+	    Wrench::Renderer::EmbeddedShaders::default_vertex_glsl,
+		Wrench::Renderer::EmbeddedShaders::default_fragment_glsl
 	);
 
 	Log(

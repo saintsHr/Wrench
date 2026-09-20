@@ -24,6 +24,59 @@ include(CMakePackageConfigHelpers)
 find_package(glfw3 REQUIRED)
 find_package(OpenGL REQUIRED)
 
+# --- Embedded Shaders ---
+
+file(GLOB SHADERS
+    ${CMAKE_CURRENT_SOURCE_DIR}/shaders/*.glsl
+)
+
+set(SHADER_SCRIPT
+    ${CMAKE_CURRENT_SOURCE_DIR}/scripts/embed-shaders.sh
+)
+
+set(GENERATED_SHADER_DIR
+    ${CMAKE_CURRENT_BINARY_DIR}/generated
+)
+
+set(GENERATED_SHADER_CPP
+    ${GENERATED_SHADER_DIR}/_embedded_shaders.cpp
+)
+
+set(GENERATED_SHADER_HPP
+    ${GENERATED_SHADER_DIR}/_embedded_shaders.hpp
+)
+
+add_custom_command(
+    OUTPUT
+        ${GENERATED_SHADER_CPP}
+        ${GENERATED_SHADER_HPP}
+
+    COMMAND
+        bash ${SHADER_SCRIPT}
+        ${GENERATED_SHADER_CPP}
+        ${GENERATED_SHADER_HPP}
+
+    DEPENDS
+        ${SHADER_SCRIPT}
+        ${SHADERS}
+
+    COMMENT
+        "Embedding Shaders"
+
+    VERBATIM
+)
+
+add_custom_target(WrenchShaders
+    DEPENDS
+        ${GENERATED_SHADER_CPP}
+        ${GENERATED_SHADER_HPP}
+)
+
+set_source_files_properties(
+    ${GENERATED_SHADER_CPP}
+    PROPERTIES GENERATED TRUE
+)
+
 # --- Engine Build ---
 
 add_library(Wrench STATIC
@@ -46,8 +99,12 @@ add_library(Wrench STATIC
 
     ${CMAKE_CURRENT_SOURCE_DIR}/src/wrench/input/input.cpp
 
+    ${GENERATED_SHADER_CPP}
+
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/src/glad.c
 )
+
+add_dependencies(Wrench WrenchShaders)
 
 add_library(Wrench::Wrench ALIAS Wrench)
 
@@ -64,6 +121,10 @@ target_include_directories(Wrench PUBLIC
 
 target_include_directories(Wrench SYSTEM PRIVATE
     ${CMAKE_CURRENT_SOURCE_DIR}/third_party/include
+)
+
+target_include_directories(Wrench PRIVATE
+    ${GENERATED_SHADER_DIR}
 )
 
 target_link_libraries(Wrench PUBLIC
