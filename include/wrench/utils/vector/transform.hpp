@@ -52,13 +52,13 @@ public:
 	}
 
 	void rotateBy(const Vec3& deltaRotation) {
-	    Quaternion delta = (
-	        Quaternion::fromAxisAngle(Vec3(1,0,0), deltaRotation.x) *
-	        Quaternion::fromAxisAngle(Vec3(0,1,0), deltaRotation.y) *
-	        Quaternion::fromAxisAngle(Vec3(0,0,1), deltaRotation.z)
-	    );
+        Quaternion delta = (
+            Quaternion::fromAxisAngle(Vec3(1,0,0), deltaRotation.x) *
+            Quaternion::fromAxisAngle(Vec3(0,1,0), deltaRotation.y) *
+            Quaternion::fromAxisAngle(Vec3(0,0,1), deltaRotation.z)
+        );
 
-	    rotation = rotation * delta;
+        rotation = rotation * delta;
 	}
 
 	void rotateBy(const Quaternion& deltaRotation) {

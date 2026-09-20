@@ -31,7 +31,7 @@ namespace Wrench::Window {
     class Window;
 }
 
-class GLFWwindow;
+struct GLFWwindow;
 
 namespace Wrench::Input {
 
