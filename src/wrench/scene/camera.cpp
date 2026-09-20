@@ -30,7 +30,7 @@ Mat4 CameraNode::getViewMatrix() const {
     return Mat4::lookAt(
         transform.position,
         transform.position + transform.forward(),
-        Vec3(0.0f, 1.0f, 0.0f)
+        transform.up()
     );
 }
 

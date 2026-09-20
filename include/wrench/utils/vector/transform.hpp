@@ -25,9 +25,27 @@ SOFTWARE.
 #pragma once
 
 #include "wrench/utils/vector/quaternion.hpp"
+#include "wrench/utils/vector/vec3.hpp"
 #include <wrench/utils/vector/mat4.hpp>
 
 namespace Wrench {
+
+enum class RotationSpace {
+    Local, World
+};
+
+enum class RotationOrder {
+    XYZ, XZY,
+    YXZ, YZX,
+    ZXY, ZYX
+};
+
+struct RotationOptions {
+    RotationSpace x = RotationSpace::Local;
+    RotationSpace y = RotationSpace::Local;
+    RotationSpace z = RotationSpace::Local;
+    RotationOrder order = RotationOrder::XYZ;
+};
 
 class Transform {
 public:
@@ -35,7 +53,7 @@ public:
 		position(0.0f, 0.0f, 0.0f),
 		rotation(0.0f, 0.0f, 0.0f, 1.0f),
 		scale(1.0f, 1.0f, 1.0f)
-	{};
+	{}
 
 	Vec3 position;
 	Quaternion rotation;
@@ -51,18 +69,92 @@ public:
 		return result;
 	}
 
-	void rotateBy(const Vec3& deltaRotation) {
-        Quaternion delta = (
-            Quaternion::fromAxisAngle(Vec3(1,0,0), deltaRotation.x) *
-            Quaternion::fromAxisAngle(Vec3(0,1,0), deltaRotation.y) *
-            Quaternion::fromAxisAngle(Vec3(0,0,1), deltaRotation.z)
-        );
+	void rotateBy(
+        const Vec3& deltaRotation,
+        const RotationOptions& options = {}
+	) {
+        struct AxisRotation {
+            Quaternion rotation;
+            RotationSpace space;
+        };
 
-        rotation = rotation * delta;
+        AxisRotation axes[3] = {
+            {
+                Quaternion::fromAxisAngle(
+                    Vec3(1,0,0),
+                    deltaRotation.x
+                ),
+                options.x
+            },
+            {
+                Quaternion::fromAxisAngle(
+                    Vec3(0,1,0),
+                    deltaRotation.y
+                ),
+                options.y
+            },
+            {
+                Quaternion::fromAxisAngle(
+                    Vec3(0,0,1),
+                    deltaRotation.z
+                ),
+                options.z
+            }
+        };
+
+        auto applyRotation = [&](const AxisRotation& axis) {
+            rotateBy(axis.rotation, axis.space);
+        };
+
+        switch (options.order) {
+            case RotationOrder::XYZ: {
+                applyRotation(axes[0]);
+                applyRotation(axes[1]);
+                applyRotation(axes[2]);
+                break;
+            }
+            case RotationOrder::XZY: {
+                applyRotation(axes[0]);
+                applyRotation(axes[2]);
+                applyRotation(axes[1]);
+                break;
+            }
+            case RotationOrder::YXZ: {
+                applyRotation(axes[1]);
+                applyRotation(axes[0]);
+                applyRotation(axes[2]);
+                break;
+            }
+            case RotationOrder::YZX: {
+                applyRotation(axes[1]);
+                applyRotation(axes[2]);
+                applyRotation(axes[0]);
+                break;
+            }
+            case RotationOrder::ZXY: {
+                applyRotation(axes[2]);
+                applyRotation(axes[0]);
+                applyRotation(axes[1]);
+                break;
+            }
+            case RotationOrder::ZYX: {
+                applyRotation(axes[2]);
+                applyRotation(axes[1]);
+                applyRotation(axes[0]);
+                break;
+            }
+        }
+
+        rotation.normalize();
 	}
 
-	void rotateBy(const Quaternion& deltaRotation) {
-		rotation = rotation * deltaRotation;
+	void rotateBy(const Quaternion& deltaRotation, RotationSpace space = RotationSpace::Local) {
+        switch (space) {
+            case RotationSpace::Local: rotation = rotation * deltaRotation; break;
+            case RotationSpace::World: rotation = deltaRotation * rotation; break;
+        }
+
+		rotation.normalize();
 	}
 
 	void moveBy(const Vec3& deltaPosition) {
@@ -79,6 +171,8 @@ public:
     		Quaternion::fromAxisAngle(Vec3(0,1,0), newRotation.y) *
 			Quaternion::fromAxisAngle(Vec3(0,0,1), newRotation.z)
 		);
+
+        rotation.normalize();
 	}
 
 	void setRotation(const Quaternion& newRotation) {

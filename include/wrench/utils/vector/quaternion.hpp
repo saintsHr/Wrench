@@ -117,7 +117,7 @@ public:
 		return result;
 	}
 
-	Quaternion fromEuler(const Vec3& euler) {
+	static Quaternion fromEuler(const Vec3& euler) {
 		Quaternion result = identity();
 
 		result = (
