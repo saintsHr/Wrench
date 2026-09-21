@@ -22,28 +22,25 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#pragma once
-
-#include "wrench/scene/scene.hpp"
-#include "wrench/window/window.hpp"
+#include "wrench/scene/components/camera.hpp"
+#include "wrench/scene/components/transform.hpp"
 
 namespace Wrench::Scene {
 
-class CameraNode : public Node {
-public:
-	float fov = 70.0f;
-	float aspectRatio =
-		Wrench::Window::DEFAULT_WINDOW_SIZE.x /
-		Wrench::Window::DEFAULT_WINDOW_SIZE.y;
+Mat4 CameraComponent::getViewMatrix() const {
+    TransformComponent& t = node()->transform();
 
-	Mat4 getViewMatrix() const;
-	Mat4 getProjectionMatrix() const;
+    Vec3 worldPos = t.getWorldPosition();
+    Quaternion worldRot = t.getWorldRotation();
 
-protected:
+    Vec3 forward = worldRot * Vec3(0, 0, -1);
+    Vec3 up = worldRot * Vec3(0, 1, 0);
 
-private:
-	static constexpr float NEAR_PLANE_ = 0.1f;
-	static constexpr float FAR_PLANE_ = 1000.0f;
-};
+    return Mat4::lookAt(worldPos, worldPos + forward, up);
+}
+
+Mat4 CameraComponent::getProjectionMatrix() const {
+    return Mat4::perspective(fov, aspectRatio, NEAR_PLANE_, FAR_PLANE_);
+}
 
 }

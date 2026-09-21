@@ -23,8 +23,9 @@ SOFTWARE.
 */
 
 #include "wrench/renderer/renderer.hpp"
-#include "wrench/scene/camera.hpp"
-#include "wrench/scene/drawable.hpp"
+#include "wrench/scene/components/camera.hpp"
+#include "wrench/scene/components/drawable.hpp"
+#include "wrench/scene/components/transform.hpp"
 #include "wrench/utils/log.hpp"
 #include "wrench/window/window.hpp"
 #include "_embedded_shaders.hpp"
@@ -180,44 +181,44 @@ void Renderer::endFrame(void) {
 }
 
 void Renderer::renderScene(Scene::Scene& scene) {
-	if (!scene.activeCamera) {
-		Log(
-			LogLevel::Warning,
-			LogCategory::Renderer,
-			"Cannot render scene: no active camera set."
-		);
-		return;
-	}
+    if (!scene.activeCamera) {
+        Log(
+            LogLevel::Warning,
+            LogCategory::Renderer,
+            "Cannot render scene: no active camera set."
+        );
+        return;
+    }
 
-	Mat4 view = scene.activeCamera->getViewMatrix();
-	Mat4 projection = scene.activeCamera->getProjectionMatrix();
+    Mat4 view = scene.activeCamera->getViewMatrix();
+    Mat4 projection = scene.activeCamera->getProjectionMatrix();
 
-	auto drawables = scene.findNodesByType<Scene::DrawableNode>();
+    auto drawables = scene.getComponents<Scene::DrawableComponent>();
 
-	for (auto* drawable : drawables) {
-		if (!drawable->mesh) {
-			Log(
-				LogLevel::Warning,
-				LogCategory::Renderer,
-				"Skipping drawable node '{}': invalid mesh.",
-				drawable->name.empty() ? "(unnamed)" : drawable->name
-			);
-			continue;
-		}
+    for (auto* drawable : drawables) {
+        if (!drawable->mesh) {
+            Log(
+                LogLevel::Warning,
+                LogCategory::Renderer,
+                "Skipping drawable on node '{}': invalid mesh.",
+                drawable->node()->name.empty() ? "(unnamed)" : drawable->node()->name
+            );
+            continue;
+        }
 
-		Mat4 model = drawable->getWorldMatrix();
-		Color color = drawable->material.color;
+        Mat4 model = drawable->node()->transform().getWorldMatrix();
+        Color color = drawable->material.color;
 
-		default_shader_->use();
+        default_shader_->use();
 
-		default_shader_->setUniformMat4("uModel", model);
-		default_shader_->setUniformMat4("uView", view);
-		default_shader_->setUniformMat4("uProjection", projection);
+        default_shader_->setUniformMat4("uModel", model);
+        default_shader_->setUniformMat4("uView", view);
+        default_shader_->setUniformMat4("uProjection", projection);
 
-		default_shader_->setUniformColor("uColor", color);
+        default_shader_->setUniformColor("uColor", color);
 
-		drawable->mesh->draw();
-	}
+        drawable->mesh->draw();
+    }
 }
 
 }

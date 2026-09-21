@@ -24,124 +24,142 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/utils/vector/transform.hpp"
-#include <memory>
 #include <string>
 #include <vector>
+#include <memory>
+#include <typeindex>
+#include <unordered_map>
 
 namespace Wrench::Scene {
 
-class CameraNode;
+class Node;
+class Component;
+class Scene;
+
+class TransformComponent;
+class CameraComponent;
 
 class Node {
+    friend class Scene;
+
 public:
-	Transform transform;
-	std::string name;
+    std::string name;
 
-	std::vector<std::unique_ptr<Node>> children;
-	Node* parent = nullptr;
+    Node* parent = nullptr;
+    std::vector<std::unique_ptr<Node>> children;
 
-	virtual ~Node() = default;
+    explicit Node(Scene& scene);
+    virtual ~Node();
 
-	Mat4 getWorldMatrix() const;
-	Vec3 getWorldPosition() const;
-	Vec3 getWorldScale() const;
-	Quaternion getWorldRotation() const;
+    Scene& scene();
+    TransformComponent& transform();
 
-	template<typename T>
-	T* addChild(std::unique_ptr<T> child) {
-		if (!child) return nullptr;
+    template<typename T, typename... Args>
+    T* addComponent(Args&&... args) {
+        static_assert(std::is_base_of_v<Component, T>);
+        auto comp = std::make_unique<T>(std::forward<Args>(args)...);
+        T* ptr = comp.get();
+        attach_component_(std::move(comp), std::type_index(typeid(T)));
+        return ptr;
+    }
 
-		T* ptr = child.get();
-		child->parent = this;
-		children.push_back(std::move(child));
+    template<typename T>
+    T* getComponent() {
+        for (auto& c : components_) {
+            if (auto* casted = dynamic_cast<T*>(c.get())) return casted;
+        }
+        return nullptr;
+    }
 
-		return ptr;
-	}
+    template<typename T>
+    std::vector<T*> getComponents() {
+        std::vector<T*> result;
+        for (auto& c : components_) {
+            if (auto* casted = dynamic_cast<T*>(c.get())) result.push_back(casted);
+        }
+        return result;
+    }
 
-	bool removeChild(Node* child);
+    template<typename T>
+    T* addChild() {
+        auto child = std::make_unique<T>(*scene_);
+        T* ptr = child.get();
+        child->parent = this;
+        children.push_back(std::move(child));
+        return ptr;
+    }
 
-	template<typename T>
-	std::vector<T*> findChildrenByType(bool includeSelf = false) {
-		std::vector<T*> result;
-		if (includeSelf) if (auto* casted = dynamic_cast<T*>(this)) result.push_back(casted);
-		collect_children_by_type<T>(this, result);
-		return result;
-	}
-
-	template<typename T>
-	T* findChildByType(bool includeSelf = false) {
-		auto result = findChildrenByType<T>(includeSelf);
-		return result.empty() ? nullptr : result[0];
-	}
-
-	std::vector<Node*> findChildrenByName(const std::string& childName, bool includeSelf = false);
-	Node* findChildByName(const std::string& childName, bool includeSelf = false);
-
-	template<typename T>
-	std::vector<T*> findDirectChildrenByType() {
-		std::vector<T*> result;
-		for (auto& child : children) {
-			if (auto* casted = dynamic_cast<T*>(child.get())) result.push_back(casted);
-		}
-		return result;
-	}
-
-	template<typename T>
-	T* findDirectChildByType() {
-		for (auto& child : children) {
-			if (auto* casted = dynamic_cast<T*>(child.get())) return casted;
-		}
-		return nullptr;
-	}
-
-	std::vector<Node*> findDirectChildrenByName(const std::string& childName);
-	Node* findDirectChildByName(const std::string& childName);
+    bool removeComponent(Component* component);
+    bool removeChild(Node* child);
 
 protected:
 
 private:
-	template<typename T>
-	void collect_children_by_type(Node* node, std::vector<T*>& out) {
-		for (auto& child : node->children) {
-			if (auto* casted = dynamic_cast<T*>(child.get())) out.push_back(casted);
-			collect_children_by_type<T>(child.get(), out);
-		}
-	}
+    Scene* scene_ = nullptr;
+    TransformComponent* transform_ = nullptr;
+    std::vector<std::unique_ptr<Component>> components_;
 
-	void collect_children_by_name(Node* node, const std::string& childName, std::vector<Node*>& out);
+    void attach_component_(std::unique_ptr<Component> comp, std::type_index type);
+};
+
+class Component {
+    friend class Node;
+
+public:
+    virtual ~Component() = default;
+
+    Node* node() const;
+    TransformComponent& transform() const;
+
+protected:
+    Component() = default;
+
+    virtual void onAttach() {}
+    virtual void onDetach() {}
+
+private:
+    Node* node_ = nullptr;
 };
 
 class Scene {
+    friend class Node;
+
 public:
-	Node root;
-	CameraNode* activeCamera = nullptr;
+    Scene();
+    ~Scene();
 
-	template<typename T>
-	T* addNode(std::unique_ptr<T> node, Node* parent = nullptr) {
-		Node* target = parent ? parent : &root;
-		return target->addChild(std::move(node));
-	}
+    CameraComponent* activeCamera = nullptr;
 
-	bool removeNode(Node* node);
+    Node& root();
+    const Node& root() const;
 
-	template<typename T>
-	std::vector<T*> findNodesByType() {
-		return root.findChildrenByType<T>(true);
-	}
+    template<typename T>
+    T* addNode(Node* parent = nullptr) {
+        Node* target = parent ? parent : root_.get();
+        return target->addChild<T>();
+    }
 
-	template<typename T>
-	T* findNodeByType() {
-		return root.findChildByType<T>(true);
-	}
+    Node* createNode(Node* parent = nullptr);
 
-	std::vector<Node*> findNodesByName(const std::string& name);
-	Node* findNodeByName(const std::string& name);
+    template<typename T>
+    std::vector<T*> getComponents() {
+        std::vector<T*> result;
+        auto it = registry_.find(std::type_index(typeid(T)));
+        if (it == registry_.end()) return result;
+        for (auto* c : it->second) result.push_back(static_cast<T*>(c));
+        return result;
+    }
 
-protected:
+    bool removeNode(Node* node);
 
 private:
-	bool is_same_or_ancestor(Node* potentialAncestor, Node* node);
+    bool destructing_ = false;
+
+    std::unordered_map<std::type_index, std::vector<Component*>> registry_;
+    std::unique_ptr<Node> root_;
+
+    void register_component_(std::type_index type, Component* comp);
+    void unregister_component_(std::type_index type, Component* comp);
 };
 
 }

@@ -22,144 +22,123 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "wrench/scene/camera.hpp"
 #include "wrench/scene/scene.hpp"
+#include "wrench/scene/components/transform.hpp"
+#include "wrench/scene/components/camera.hpp"
+#include <algorithm>
 
 namespace Wrench::Scene {
 
-bool Scene::removeNode(Node* node) {
-	if (!node || node == &root || !node->parent) return false;
+Node::Node(Scene& scene) : scene_(&scene) {
+    transform_ = addComponent<TransformComponent>();
+}
 
-	if (activeCamera && is_same_or_ancestor(node, activeCamera)) {
-		activeCamera = nullptr;
-	}
+Node::~Node() {
+    if (scene_ && !scene_->destructing_ &&
+        scene_->activeCamera && scene_->activeCamera->node() == this) {
+        scene_->activeCamera = nullptr;
+    }
 
-	return node->parent->removeChild(node);
+    for (auto& c : components_) {
+        c->onDetach();
+        if (scene_ && !scene_->destructing_) {
+            scene_->unregister_component_(std::type_index(typeid(*c)), c.get());
+        }
+    }
+}
+
+Scene& Node::scene() {
+    return *scene_;
+}
+
+TransformComponent& Node::transform() {
+    return *transform_;
+}
+
+void Node::attach_component_(std::unique_ptr<Component> comp, std::type_index type) {
+    comp->node_ = this;
+    Component* ptr = comp.get();
+
+    components_.push_back(std::move(comp));
+
+    if (scene_) scene_->register_component_(type, ptr);
+
+    ptr->onAttach();
+}
+
+bool Node::removeComponent(Component* component) {
+    if (!component || component == transform_) return false;
+
+    auto it = std::ranges::find_if(
+        components_,
+        [component](const std::unique_ptr<Component>& c) {
+            return c.get() == component;
+        }
+    );
+    if (it == components_.end()) return false;
+
+    (*it)->onDetach();
+
+    if (scene_) scene_->unregister_component_(std::type_index(typeid(*component)), component);
+
+    components_.erase(it);
+    return true;
 }
 
 bool Node::removeChild(Node* child) {
-	auto it = std::ranges::find_if(
-		children.begin(), children.end(),
+    auto it = std::ranges::find_if(
+        children,
+        [child](const std::unique_ptr<Node>& c) { return c.get() == child; }
+    );
+    if (it == children.end()) return false;
 
-		[child](const std::unique_ptr<Node>& c) {
-			return c.get() == child;
-		}
-	); if (it == children.end()) return false;
-
-	children.erase(it);
-	return true;
+    children.erase(it);
+    return true;
 }
 
-std::vector<Node*> Node::findChildrenByName(const std::string& childName, bool includeSelf) {
-	std::vector<Node*> result;
-	if (includeSelf && this->name == childName) result.push_back(this);
-	collect_children_by_name(this, childName, result);
-	return result;
+Node* Component::node() const {
+    return node_;
 }
 
-Node* Node::findChildByName(const std::string& childName, bool includeSelf) {
-	auto result = findChildrenByName(childName, includeSelf);
-	return result.empty() ? nullptr : result[0];
+TransformComponent& Component::transform() const {
+    return node_->transform();
 }
 
-std::vector<Node*> Node::findDirectChildrenByName(const std::string& childName) {
-	std::vector<Node*> result;
-	for (auto& child : children) {
-		if (child->name == childName) result.push_back(child.get());
-	}
-	return result;
+Scene::Scene() {
+    root_ = std::make_unique<Node>(*this);
 }
 
-Node* Node::findDirectChildByName(const std::string& childName) {
-	for (auto& child : children) {
-		if (child->name == childName) return child.get();
-	}
-	return nullptr;
+Scene::~Scene() {
+    destructing_ = true;
 }
 
-void Node::collect_children_by_name(Node* node, const std::string& childName, std::vector<Node*>& out) {
-	for (auto& child : node->children) {
-		if (child->name == childName) out.push_back(child.get());
-		collect_children_by_name(child.get(), childName, out);
-	}
+Node& Scene::root() {
+    return *root_;
 }
 
-Mat4 Node::getWorldMatrix() const {
-	if (parent) return parent->getWorldMatrix() * transform.toMat4();
-	return transform.toMat4();
-}
-Vec3 Node::getWorldPosition() const {
-	Mat4 m = getWorldMatrix();
-	return Vec3(m(3, 0), m(3, 1), m(3, 2));
+const Node& Scene::root() const {
+    return *root_;
 }
 
-Vec3 Node::getWorldScale() const {
-	Mat4 m = getWorldMatrix();
-
-	Vec3 col0(m(0, 0), m(0, 1), m(0, 2));
-	Vec3 col1(m(1, 0), m(1, 1), m(1, 2));
-	Vec3 col2(m(2, 0), m(2, 1), m(2, 2));
-
-	return Vec3(col0.length(), col1.length(), col2.length());
+bool Scene::removeNode(Node* node) {
+    if (!node || node == root_.get() || !node->parent) return false;
+    return node->parent->removeChild(node);
 }
 
-Quaternion Node::getWorldRotation() const {
-	Mat4 m = getWorldMatrix();
-	Vec3 scale = getWorldScale();
-
-	float m00 = m(0,0) / scale.x, m01 = m(1,0) / scale.y, m02 = m(2,0) / scale.z;
-	float m10 = m(0,1) / scale.x, m11 = m(1,1) / scale.y, m12 = m(2,1) / scale.z;
-	float m20 = m(0,2) / scale.x, m21 = m(1,2) / scale.y, m22 = m(2,2) / scale.z;
-
-	Quaternion q;
-	float trace = m00 + m11 + m22;
-
-	if (trace > 0) {
-		float s = std::sqrt(trace + 1.0f) * 2.0f;
-		q.w = 0.25f * s;
-		q.x = (m21 - m12) / s;
-		q.y = (m02 - m20) / s;
-		q.z = (m10 - m01) / s;
-	} else if (m00 > m11 && m00 > m22) {
-		float s = std::sqrt(1.0f + m00 - m11 - m22) * 2.0f;
-		q.w = (m21 - m12) / s;
-		q.x = 0.25f * s;
-		q.y = (m01 + m10) / s;
-		q.z = (m02 + m20) / s;
-	} else if (m11 > m22) {
-		float s = std::sqrt(1.0f + m11 - m00 - m22) * 2.0f;
-		q.w = (m02 - m20) / s;
-		q.x = (m01 + m10) / s;
-		q.y = 0.25f * s;
-		q.z = (m12 + m21) / s;
-	} else {
-		float s = std::sqrt(1.0f + m22 - m00 - m11) * 2.0f;
-		q.w = (m10 - m01) / s;
-		q.x = (m02 + m20) / s;
-		q.y = (m12 + m21) / s;
-		q.z = 0.25f * s;
-	}
-
-	return q;
+Node* Scene::createNode(Node* parent) {
+    return addNode<Node>(parent);
 }
 
-bool Scene::is_same_or_ancestor(Node* potentialAncestor, Node* node) {
-	Node* current = node;
-
-	while (current) {
-		if (current == potentialAncestor) return true;
-		current = current->parent;
-	}
-
-	return false;
+void Scene::register_component_(std::type_index type, Component* comp) {
+    registry_[type].push_back(comp);
 }
 
-std::vector<Node*> Scene::findNodesByName(const std::string& name) {
-	return root.findChildrenByName(name, true);
-}
+void Scene::unregister_component_(std::type_index type, Component* comp) {
+    auto it = registry_.find(type);
+    if (it == registry_.end()) return;
 
-Node* Scene::findNodeByName(const std::string& name) {
-	return root.findChildByName(name, true);
+    auto& vec = it->second;
+    vec.erase(std::remove(vec.begin(), vec.end(), comp), vec.end());
 }
 
 }

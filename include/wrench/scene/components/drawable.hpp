@@ -22,20 +22,23 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "wrench/scene/camera.hpp"
+#pragma once
+
+#include "wrench/renderer/mesh.hpp"
+#include "wrench/renderer/material.hpp"
+#include "wrench/scene/scene.hpp"
 
 namespace Wrench::Scene {
 
-Mat4 CameraNode::getViewMatrix() const {
-    return Mat4::lookAt(
-        transform.position,
-        transform.position + transform.forward(),
-        transform.up()
-    );
-}
+class DrawableComponent : public Component {
+public:
+    Renderer::Mesh* mesh = nullptr;
+    Renderer::Material material;
 
-Mat4 CameraNode::getProjectionMatrix() const {
-	return Mat4::perspective(fov, aspectRatio, NEAR_PLANE_, FAR_PLANE_);
-}
+protected:
+
+private:
+
+};
 
 }

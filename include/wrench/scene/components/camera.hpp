@@ -24,21 +24,27 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/renderer/mesh.hpp"
-#include "wrench/renderer/material.hpp"
 #include "wrench/scene/scene.hpp"
+#include "wrench/utils/vector/mat4.hpp"
+#include "wrench/window/window.hpp"
 
 namespace Wrench::Scene {
 
-class DrawableNode : public Node {
+class CameraComponent : public Component {
 public:
-	Renderer::Mesh* mesh;
-	Renderer::Material material;
+    float fov = 70.0f;
+    float aspectRatio =
+        Wrench::Window::DEFAULT_WINDOW_SIZE.x /
+        Wrench::Window::DEFAULT_WINDOW_SIZE.y;
+
+    Mat4 getViewMatrix() const;
+    Mat4 getProjectionMatrix() const;
 
 protected:
 
 private:
-
+    static constexpr float NEAR_PLANE_ = 0.1f;
+    static constexpr float FAR_PLANE_ = 1000.0f;
 };
 
 }

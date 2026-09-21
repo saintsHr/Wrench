@@ -24,27 +24,40 @@ SOFTWARE.
 
 #pragma once
 
-#include "wrench/core/engine.hpp"
-#include "wrench/core/application.hpp"
-
-#include "wrench/window/window.hpp"
-
-#include "wrench/renderer/renderer.hpp"
-#include "wrench/renderer/shader.hpp"
-#include "wrench/renderer/mesh.hpp"
-
-#include "wrench/scene/components/camera.hpp"
-#include "wrench/scene/components/drawable.hpp"
-#include "wrench/scene/components/transform.hpp"
 #include "wrench/scene/scene.hpp"
+#include "wrench/utils/vector/transform.hpp"
 
-#include "wrench/utils/vector/math.hpp"
-#include "wrench/utils/vector/vec2.hpp"
-#include "wrench/utils/vector/vec3.hpp"
-#include "wrench/utils/vector/mat4.hpp"
-#include "wrench/utils/vector/quaternion.hpp"
+namespace Wrench::Scene {
 
-#include "wrench/utils/log.hpp"
-#include "wrench/utils/timer.hpp"
+class TransformComponent : public Component {
+public:
+    Mat4 toMat4() const;
 
-#include "wrench/input/input.hpp"
+    void rotateBy(const Vec3& deltaRotation, const RotationOptions& options = {});
+    void rotateBy(const Quaternion& deltaRotation, RotationSpace space = RotationSpace::Local);
+    void moveBy(const Vec3& deltaPosition);
+    void scaleBy(const Vec3& deltaScale);
+
+    void setRotation(const Vec3& r);
+    void setRotation(const Quaternion& r);
+    void setPosition(const Vec3& p);
+    void setScale(const Vec3& s);
+
+    void lookAt(const Vec3& target);
+
+    Vec3 forward() const;
+    Vec3 right() const;
+    Vec3 up() const;
+
+    Mat4 getWorldMatrix() const;
+    Vec3 getWorldPosition() const;
+    Vec3 getWorldScale() const;
+    Quaternion getWorldRotation() const;
+
+protected:
+
+private:
+    Transform local_;
+};
+
+}

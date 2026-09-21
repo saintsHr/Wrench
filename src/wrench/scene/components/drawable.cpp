@@ -22,7 +22,7 @@ OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE.
 */
 
-#include "wrench/scene/drawable.hpp"
+#include "wrench/scene/components/drawable.hpp"
 
 namespace Wrench::Scene {
 
