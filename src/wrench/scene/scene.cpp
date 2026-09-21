@@ -42,7 +42,8 @@ Node::~Node() {
     for (auto& c : components_) {
         c->onDetach();
         if (scene_ && !scene_->destructing_) {
-            scene_->unregister_component_(std::type_index(typeid(*c)), c.get());
+            Component& comp = *c;
+            scene_->unregister_component_(std::type_index(typeid(comp)), c.get());
         }
     }
 }
@@ -71,15 +72,16 @@ bool Node::removeComponent(Component* component) {
 
     auto it = std::ranges::find_if(
         components_,
-        [component](const std::unique_ptr<Component>& c) {
-            return c.get() == component;
-        }
+        [component](const std::unique_ptr<Component>& c) { return c.get() == component; }
     );
     if (it == components_.end()) return false;
 
     (*it)->onDetach();
 
-    if (scene_) scene_->unregister_component_(std::type_index(typeid(*component)), component);
+    if (scene_) {
+        Component& comp = *component;
+        scene_->unregister_component_(std::type_index(typeid(comp)), component);
+    }
 
     components_.erase(it);
     return true;
