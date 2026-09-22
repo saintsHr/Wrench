@@ -80,8 +80,12 @@ Vec3 TransformComponent::up() const {
 }
 
 Mat4 TransformComponent::getWorldMatrix() const {
-    Node* parent = node()->parent;
-    if (parent) return parent->transform().getWorldMatrix() * local_.toMat4();
+    Node* self = node();
+    if (self->parent.valid()) {
+        if (auto* parentTransform = scene().getComponentOfType<TransformComponent>(self->parent)) {
+            return parentTransform->getWorldMatrix() * local_.toMat4();
+        }
+    }
     return local_.toMat4();
 }
 

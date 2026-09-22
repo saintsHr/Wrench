@@ -181,32 +181,51 @@ void Renderer::endFrame(void) {
 }
 
 void Renderer::renderScene(Scene::Scene& scene) {
-    if (!scene.activeCamera) {
+    if (!scene.activeCamera.valid()) {
         Log(
-            LogLevel::Warning,
-            LogCategory::Renderer,
+            LogLevel::Warning, LogCategory::Renderer,
             "Cannot render scene: no active camera set."
         );
         return;
     }
 
-    Mat4 view = scene.activeCamera->getViewMatrix();
-    Mat4 projection = scene.activeCamera->getProjectionMatrix();
+    auto* cameraComp = scene.getComponentOfType<Scene::CameraComponent>(scene.activeCamera);
+    if (!cameraComp) {
+        Log(
+            LogLevel::Warning, LogCategory::Renderer,
+            "Cannot render scene: active camera node has no CameraComponent."
+        );
+        return;
+    }
 
-    auto drawables = scene.getComponents<Scene::DrawableComponent>();
+    Mat4 view = cameraComp->getViewMatrix();
+    Mat4 projection = cameraComp->getProjectionMatrix();
+
+    auto drawables = scene.getComponentsOfType<Scene::DrawableComponent>();
 
     for (auto* drawable : drawables) {
+        Scene::Node* ownerNode = scene.getNode(drawable->owner);
+
         if (!drawable->mesh) {
             Log(
-                LogLevel::Warning,
-                LogCategory::Renderer,
+                LogLevel::Warning, LogCategory::Renderer,
                 "Skipping drawable on node '{}': invalid mesh.",
-                drawable->node()->name.empty() ? "(unnamed)" : drawable->node()->name
+                (ownerNode && !ownerNode->name.empty()) ? ownerNode->name : "(unnamed)"
             );
             continue;
         }
 
-        Mat4 model = drawable->node()->transform().getWorldMatrix();
+        auto* transform = scene.getComponentOfType<Scene::TransformComponent>(drawable->owner);
+        if (!transform) {
+            Log(
+                LogLevel::Warning, LogCategory::Renderer,
+                "Skipping drawable on node '{}': no TransformComponent.",
+                ownerNode->name.empty() ? "(unnamed)" : ownerNode->name
+            );
+            continue;
+        }
+
+        Mat4 model = transform->getWorldMatrix();
         Color color = drawable->material.color;
 
         default_shader_->use();
@@ -214,7 +233,6 @@ void Renderer::renderScene(Scene::Scene& scene) {
         default_shader_->setUniformMat4("uModel", model);
         default_shader_->setUniformMat4("uView", view);
         default_shader_->setUniformMat4("uProjection", projection);
-
         default_shader_->setUniformColor("uColor", color);
 
         drawable->mesh->draw();

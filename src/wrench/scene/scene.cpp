@@ -23,124 +23,140 @@ SOFTWARE.
 */
 
 #include "wrench/scene/scene.hpp"
-#include "wrench/scene/components/transform.hpp"
-#include "wrench/scene/components/camera.hpp"
 #include <algorithm>
 
 namespace Wrench::Scene {
 
-Node::Node(Scene& scene) : scene_(&scene) {
-    transform_ = addComponent<TransformComponent>();
+Scene::Scene() {
+    root_ = node_pool_.emplace();
+    Node* r = node_pool_.get(root_);
+    r->id = root_;
+    r->parent = InvalidNode;
 }
 
-Node::~Node() {
-    if (scene_ && !scene_->destructing_ &&
-        scene_->activeCamera && scene_->activeCamera->node() == this) {
-        scene_->activeCamera = nullptr;
-    }
+NodeID Scene::createNode(NodeID parentId) {
+    NodeID pid = parentId.valid() ? parentId : root_;
+    Node* parent = getNode(pid);
+    if (!parent) return InvalidNode;
 
-    for (auto& c : components_) {
-        c->onDetach();
-        if (scene_ && !scene_->destructing_) {
-            Component& comp = *c;
-            scene_->unregister_component_(std::type_index(typeid(comp)), c.get());
-        }
-    }
+    NodeID newId = node_pool_.emplace();
+    Node* n = node_pool_.get(newId);
+    n->id = newId;
+    n->parent = pid;
+
+    parent->children.push_back(newId);
+    return newId;
 }
 
-Scene& Node::scene() {
+bool Scene::removeNode(NodeID id) {
+    if (id == root_) return false;
+    Node* n = getNode(id);
+    if (!n) return false;
+
+    std::vector<NodeID> childrenCopy = n->children;
+    for (NodeID child : childrenCopy) {
+        removeNode(child);
+    }
+
+    std::vector<ComponentID> compsCopy = n->components;
+    for (ComponentID cid : compsCopy) {
+        detach_and_remove_component_(*n, cid);
+    }
+
+    if (activeCamera == id) {
+        activeCamera = InvalidNode;
+    }
+
+    if (Node* parent = getNode(n->parent)) {
+        auto& siblings = parent->children;
+        siblings.erase(std::remove(siblings.begin(), siblings.end(), id), siblings.end());
+    }
+
+    return node_pool_.remove(id);
+}
+
+Node* Scene::getNode(NodeID id) {
+    return node_pool_.get(id);
+}
+
+const Node* Scene::getNode(NodeID id) const {
+    return node_pool_.get(id);
+}
+
+bool Scene::isNodeValid(NodeID id) const {
+    return node_pool_.isValid(id);
+}
+
+Component* Scene::getComponent(ComponentID id) {
+    if (!id.valid() || id.index >= component_slots_.size()) return nullptr;
+    auto& slot = component_slots_[id.index];
+    if (slot.generation != id.generation || !slot.value) return nullptr;
+    return slot.value.get();
+}
+
+const Component* Scene::getComponent(ComponentID id) const {
+    if (!id.valid() || id.index >= component_slots_.size()) return nullptr;
+    const auto& slot = component_slots_[id.index];
+    if (slot.generation != id.generation || !slot.value) return nullptr;
+    return slot.value.get();
+}
+
+bool Scene::isComponentValid(ComponentID id) const {
+    return getComponent(id) != nullptr;
+}
+
+ComponentID Scene::insert_component_(std::unique_ptr<Component> comp) {
+    uint64_t idx;
+    if (!free_component_slots_.empty()) {
+        idx = free_component_slots_.back();
+        free_component_slots_.pop_back();
+        component_slots_[idx].value = std::move(comp);
+    } else {
+        idx = component_slots_.size();
+        component_slots_.push_back(ComponentSlot{std::move(comp), 0});
+    }
+    return ComponentID{idx, component_slots_[idx].generation};
+}
+
+void Scene::erase_from_registry_(std::type_index type, ComponentID id) {
+    auto it = registry_.find(type);
+    if (it == registry_.end()) return;
+    auto& vec = it->second;
+    vec.erase(std::remove(vec.begin(), vec.end(), id), vec.end());
+}
+
+bool Scene::detach_and_remove_component_(Node& owner, ComponentID cid) {
+    Component* comp = getComponent(cid);
+    if (!comp) return false;
+
+    comp->onDetach();
+    erase_from_registry_(std::type_index(typeid(*comp)), cid);
+
+    auto& slot = component_slots_[cid.index];
+    slot.value.reset();
+    slot.generation++;
+    free_component_slots_.push_back(cid.index);
+
+    auto& comps = owner.components;
+    comps.erase(std::remove(comps.begin(), comps.end(), cid), comps.end());
+
+    return true;
+}
+
+bool Scene::removeComponent(ComponentID id) {
+    Component* comp = getComponent(id);
+    if (!comp) return false;
+    Node* owner = getNode(comp->owner);
+    if (!owner) return false;
+    return detach_and_remove_component_(*owner, id);
+}
+
+Scene& Component::scene() const {
     return *scene_;
 }
 
-TransformComponent& Node::transform() {
-    return *transform_;
-}
-
-void Node::attach_component_(std::unique_ptr<Component> comp, std::type_index type) {
-    comp->node_ = this;
-    Component* ptr = comp.get();
-
-    components_.push_back(std::move(comp));
-
-    if (scene_) scene_->register_component_(type, ptr);
-
-    ptr->onAttach();
-}
-
-bool Node::removeComponent(Component* component) {
-    if (!component || component == transform_) return false;
-
-    auto it = std::ranges::find_if(
-        components_,
-        [component](const std::unique_ptr<Component>& c) { return c.get() == component; }
-    );
-    if (it == components_.end()) return false;
-
-    (*it)->onDetach();
-
-    if (scene_) {
-        Component& comp = *component;
-        scene_->unregister_component_(std::type_index(typeid(comp)), component);
-    }
-
-    components_.erase(it);
-    return true;
-}
-
-bool Node::removeChild(Node* child) {
-    auto it = std::ranges::find_if(
-        children,
-        [child](const std::unique_ptr<Node>& c) { return c.get() == child; }
-    );
-    if (it == children.end()) return false;
-
-    children.erase(it);
-    return true;
-}
-
 Node* Component::node() const {
-    return node_;
-}
-
-TransformComponent& Component::transform() const {
-    return node_->transform();
-}
-
-Scene::Scene() {
-    root_ = std::make_unique<Node>(*this);
-}
-
-Scene::~Scene() {
-    destructing_ = true;
-}
-
-Node& Scene::root() {
-    return *root_;
-}
-
-const Node& Scene::root() const {
-    return *root_;
-}
-
-bool Scene::removeNode(Node* node) {
-    if (!node || node == root_.get() || !node->parent) return false;
-    return node->parent->removeChild(node);
-}
-
-Node* Scene::createNode(Node* parent) {
-    return addNode<Node>(parent);
-}
-
-void Scene::register_component_(std::type_index type, Component* comp) {
-    registry_[type].push_back(comp);
-}
-
-void Scene::unregister_component_(std::type_index type, Component* comp) {
-    auto it = registry_.find(type);
-    if (it == registry_.end()) return;
-
-    auto& vec = it->second;
-    vec.erase(std::remove(vec.begin(), vec.end(), comp), vec.end());
+    return scene_->getNode(owner);
 }
 
 }

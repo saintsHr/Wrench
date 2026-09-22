@@ -28,10 +28,11 @@ SOFTWARE.
 namespace Wrench::Scene {
 
 Mat4 CameraComponent::getViewMatrix() const {
-    TransformComponent& t = node()->transform();
+    auto* t = scene().getComponentOfType<TransformComponent>(owner);
+    if (!t) return Mat4::identity();
 
-    Vec3 worldPos = t.getWorldPosition();
-    Quaternion worldRot = t.getWorldRotation();
+    Vec3 worldPos = t->getWorldPosition();
+    Quaternion worldRot = t->getWorldRotation();
 
     Vec3 forward = worldRot * Vec3(0, 0, -1);
     Vec3 up = worldRot * Vec3(0, 1, 0);

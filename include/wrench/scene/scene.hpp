@@ -24,6 +24,7 @@ SOFTWARE.
 
 #pragma once
 
+#include "wrench/scene/data.hpp"
 #include <string>
 #include <vector>
 #include <memory>
@@ -40,126 +41,140 @@ class TransformComponent;
 class CameraComponent;
 
 class Node {
-    friend class Scene;
-
 public:
     std::string name;
 
-    Node* parent = nullptr;
-    std::vector<std::unique_ptr<Node>> children;
+    NodeID id;
+    NodeID parent = InvalidNode;
 
-    explicit Node(Scene& scene);
-    virtual ~Node();
+    std::vector<NodeID> children;
+    std::vector<ComponentID> components;
+};
 
-    Scene& scene();
-    TransformComponent& transform();
+class Component {
 
-    template<typename T, typename... Args>
-    T* addComponent(Args&&... args) {
-        static_assert(std::is_base_of_v<Component, T>);
-        auto comp = std::make_unique<T>(std::forward<Args>(args)...);
-        T* ptr = comp.get();
-        attach_component_(std::move(comp), std::type_index(typeid(T)));
-        return ptr;
-    }
+friend class Scene;
 
-    template<typename T>
-    T* getComponent() {
-        for (auto& c : components_) {
-            if (auto* casted = dynamic_cast<T*>(c.get())) return casted;
-        }
-        return nullptr;
-    }
+public:
+    virtual ~Component() = default;
 
-    template<typename T>
-    std::vector<T*> getComponents() {
-        std::vector<T*> result;
-        for (auto& c : components_) {
-            if (auto* casted = dynamic_cast<T*>(c.get())) result.push_back(casted);
-        }
-        return result;
-    }
+    ComponentID id;
+    NodeID owner = InvalidNode;
 
-    template<typename T>
-    T* addChild() {
-        auto child = std::make_unique<T>(*scene_);
-        T* ptr = child.get();
-        child->parent = this;
-        children.push_back(std::move(child));
-        return ptr;
-    }
+    Scene& scene() const;
+    Node* node() const;
 
-    bool removeComponent(Component* component);
-    bool removeChild(Node* child);
+    virtual void onAttach() {}
+    virtual void onDetach() {}
 
 protected:
 
 private:
     Scene* scene_ = nullptr;
-    TransformComponent* transform_ = nullptr;
-    std::vector<std::unique_ptr<Component>> components_;
-
-    void attach_component_(std::unique_ptr<Component> comp, std::type_index type);
-};
-
-class Component {
-    friend class Node;
-
-public:
-    virtual ~Component() = default;
-
-    Node* node() const;
-    TransformComponent& transform() const;
-
-protected:
-    Component() = default;
-
-    virtual void onAttach() {}
-    virtual void onDetach() {}
-
-private:
-    Node* node_ = nullptr;
 };
 
 class Scene {
-    friend class Node;
-
 public:
     Scene();
-    ~Scene();
 
-    CameraComponent* activeCamera = nullptr;
+    NodeID root() const { return root_; }
 
-    Node& root();
-    const Node& root() const;
+    NodeID createNode(NodeID parent = InvalidNode);
+    bool removeNode(NodeID id);
 
-    template<typename T>
-    T* addNode(Node* parent = nullptr) {
-        Node* target = parent ? parent : root_.get();
-        return target->addChild<T>();
+    Node* getNode(NodeID id);
+    const Node* getNode(NodeID id) const;
+
+    template<typename T, typename... Args>
+    ComponentID createComponent(NodeID parent, Args&&... args) {
+        static_assert(std::is_base_of_v<Component, T>);
+
+        Node* n = getNode(parent);
+        if (!n) return InvalidComponent;
+
+        auto comp = std::make_unique<T>(std::forward<Args>(args)...);
+        ComponentID cid = insert_component_(std::move(comp));
+
+        Component* ptr = component_slots_[cid.index].value.get();
+        ptr->id = cid;
+        ptr->owner = parent;
+        ptr->scene_ = this;
+
+        n->components.push_back(cid);
+        registry_[std::type_index(typeid(T))].push_back(cid);
+
+        ptr->onAttach();
+        return cid;
     }
 
-    Node* createNode(Node* parent = nullptr);
+    bool removeComponent(ComponentID id);
+
+    Component* getComponent(ComponentID id);
+    const Component* getComponent(ComponentID id) const;
 
     template<typename T>
-    std::vector<T*> getComponents() {
-        std::vector<T*> result;
+    T* getComponentOfType(NodeID nodeId) {
+        Node* n = getNode(nodeId);
+        if (!n) return nullptr;
+        for (ComponentID cid : n->components) {
+            if (auto* c = dynamic_cast<T*>(getComponent(cid))) return c;
+        }
+        return nullptr;
+    }
+
+    template<typename T>
+    T* getComponentOfType() {
         auto it = registry_.find(std::type_index(typeid(T)));
-        if (it == registry_.end()) return result;
-        for (auto* c : it->second) result.push_back(static_cast<T*>(c));
+        if (it == registry_.end() || it->second.empty()) return nullptr;
+        for (ComponentID cid : it->second) {
+            if (auto* c = dynamic_cast<T*>(getComponent(cid))) return c;
+        }
+        return nullptr;
+    }
+
+    template<typename T>
+    std::vector<T*> getComponentsOfType(NodeID nodeId) {
+        std::vector<T*> result;
+        Node* n = getNode(nodeId);
+        if (!n) return result;
+        for (ComponentID cid : n->components) {
+            if (auto* c = dynamic_cast<T*>(getComponent(cid))) result.push_back(c);
+        }
         return result;
     }
 
-    bool removeNode(Node* node);
+    template<typename T>
+    std::vector<T*> getComponentsOfType() {
+        std::vector<T*> result;
+        auto it = registry_.find(std::type_index(typeid(T)));
+        if (it == registry_.end()) return result;
+        for (ComponentID cid : it->second) {
+            if (auto* c = dynamic_cast<T*>(getComponent(cid))) result.push_back(c);
+        }
+        return result;
+    }
+
+    bool isNodeValid(NodeID id) const;
+    bool isComponentValid(ComponentID id) const;
+
+    NodeID activeCamera = InvalidNode;
 
 private:
-    bool destructing_ = false;
+    struct ComponentSlot {
+        std::unique_ptr<Component> value;
+        uint64_t generation = 0;
+    };
 
-    std::unordered_map<std::type_index, std::vector<Component*>> registry_;
-    std::unique_ptr<Node> root_;
+    std::vector<ComponentSlot> component_slots_;
+    std::vector<uint64_t> free_component_slots_;
+    std::unordered_map<std::type_index, std::vector<ComponentID>> registry_;
 
-    void register_component_(std::type_index type, Component* comp);
-    void unregister_component_(std::type_index type, Component* comp);
+    NodeID root_ = InvalidNode;
+    Pool<Node, NodeID> node_pool_;
+
+    ComponentID insert_component_(std::unique_ptr<Component> comp);
+    void erase_from_registry_(std::type_index type, ComponentID id);
+    bool detach_and_remove_component_(Node& owner, ComponentID cid);
 };
 
 }
