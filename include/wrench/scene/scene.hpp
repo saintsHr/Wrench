@@ -30,12 +30,14 @@ SOFTWARE.
 #include <memory>
 #include <typeindex>
 #include <unordered_map>
+#include <cassert>
 
 namespace Wrench::Scene {
 
 class Node;
 class Component;
 class Scene;
+class Entity;
 
 class TransformComponent;
 class CameraComponent;
@@ -84,6 +86,9 @@ public:
 
     Node* getNode(NodeID id);
     const Node* getNode(NodeID id) const;
+
+    Entity createEntity(NodeID parent = InvalidNode);
+    Entity getEntity(NodeID id);
 
     template<typename T, typename... Args>
     ComponentID createComponent(NodeID parent, Args&&... args) {
@@ -175,6 +180,64 @@ private:
     ComponentID insert_component_(std::unique_ptr<Component> comp);
     void erase_from_registry_(std::type_index type, ComponentID id);
     bool detach_and_remove_component_(Node& owner, ComponentID cid);
+};
+
+class Entity {
+
+friend class Scene;
+
+public:
+    Entity() = default;
+
+    explicit operator bool() const {
+        return valid();
+    }
+
+    template<typename T, typename... Args>
+    T& addComponent(Args&&... args) {
+        ComponentID cid = scene_->createComponent<T>(
+            id_, std::forward<Args>(args)...
+        );
+
+        T* component = dynamic_cast<T*>(
+            scene_->getComponent(cid)
+        );
+
+        assert(component);
+        return *component;
+    }
+
+    template<typename T>
+    bool removeComponent(T* component) {
+        if (!component) return false;
+        return scene_->removeComponent(component->id);
+    }
+
+    template<typename T>
+    T* getComponent() {
+        return scene_->getComponentOfType<T>(id_);
+    }
+
+    template<typename T>
+    std::vector<T*> getComponents() {
+        return scene_->getComponentsOfType<T>(id_);
+    }
+
+    Scene& scene() const;
+    NodeID id() const;
+
+    Node* node();
+    const Node* node() const;
+
+    bool valid() const;
+
+protected:
+
+private:
+    Entity(Scene* scene, NodeID id) : id_(id), scene_(scene) {}
+
+    NodeID id_ = InvalidNode;
+    Scene* scene_ = nullptr;
 };
 
 }

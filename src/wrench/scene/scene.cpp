@@ -24,6 +24,7 @@ SOFTWARE.
 
 #include "wrench/scene/scene.hpp"
 #include <algorithm>
+#include <cassert>
 
 namespace Wrench::Scene {
 
@@ -81,6 +82,18 @@ Node* Scene::getNode(NodeID id) {
 
 const Node* Scene::getNode(NodeID id) const {
     return node_pool_.get(id);
+}
+
+Entity Scene::createEntity(NodeID parent) {
+    NodeID id = createNode(parent);
+    if (!id.valid()) return Entity(nullptr, InvalidNode);
+
+    return Entity(this, id);
+}
+
+Entity Scene::getEntity(NodeID id) {
+    if (!isNodeValid(id)) return Entity(nullptr, InvalidNode);
+    return Entity(this, id);
 }
 
 bool Scene::isNodeValid(NodeID id) const {
@@ -157,6 +170,27 @@ Scene& Component::scene() const {
 
 Node* Component::node() const {
     return scene_->getNode(owner);
+}
+
+Scene& Entity::scene() const {
+    assert(scene_);
+    return *scene_;
+}
+
+NodeID Entity::id() const {
+    return id_;
+}
+
+Node* Entity::node() {
+    return scene_->getNode(id_);
+}
+
+const Node* Entity::node() const {
+    return scene_->getNode(id_);
+}
+
+bool Entity::valid() const {
+    return scene_ && scene_->isNodeValid(id_);
 }
 
 }
